@@ -10,6 +10,8 @@ You can configure the API without changing the code in either of these ways:
 
 - `window.FTS_TRIP_API_BASE` = the API base URL (no trailing slash)
 - `window.FTS_TRIPS_ENDPOINT` = the trips endpoint path (default: `/fts/v1/trips`)
+- `window.FTS_TRIPS_PAGE` = default page (default: `1`)
+- `window.FTS_TRIPS_PER_PAGE` = page size (default: `50`)
 
 2) **Fallback (code config):** edit defaults in [config.js](file:///D:/FTS%20Projects/new%20FTS%20web%20site/js/config.js):
 
@@ -20,6 +22,7 @@ Notes:
 - `window.FTS_API_BASE` is still supported for backward compatibility if `window.FTS_TRIP_API_BASE` is not set.
 - Default production base: `https://ftstravels.com/wp-json`
 - Default production endpoint: `/fts/v1/trips`
+- This endpoint requires pagination params (`page` and `per_page`). The frontend sends them automatically.
 - If the API request fails, or returns an empty list, the site automatically falls back to mock tours from `js/data.js`.
 
 ## Mapper / adapter layer

@@ -1,5 +1,5 @@
 import { categories as mockCategories, popularDestinations as mockPopularDestinations, tours as mockTours } from "./data.js";
-import { getTripApiBase, getTripsEndpoint } from "./config.js";
+import { getTripApiBase, getTripsEndpoint, getTripsPage, getTripsPerPage } from "./config.js";
 import { mapTripsResponseToTours } from "./wpTripMapper.js";
 import { sanitizeHtml } from "./html.js";
 
@@ -41,18 +41,45 @@ function normalizeTour(t) {
   return tour;
 }
 
+function isDebugEnabled() {
+  try {
+    if (typeof window === "undefined") return false;
+    if (window.FTS_DEBUG === true || window.FTS_DEBUG === "1") return true;
+    return window.localStorage?.getItem?.("FTS_DEBUG") === "1";
+  } catch {
+    return false;
+  }
+}
+
 async function fetchJson(url) {
   const res = await fetch(url, { headers: { Accept: "application/json" } });
-  if (!res.ok) throw new Error(`Request failed (${res.status})`);
-  return res.json();
+  const contentType = String(res.headers.get("content-type") || "");
+  const isJson = contentType.includes("application/json") || contentType.includes("application/problem+json");
+  const data = isJson ? await res.json() : await res.text();
+  return { ok: res.ok, status: res.status, data };
 }
 
 async function loadFromApi() {
   const base = getTripApiBase();
   if (!base) return null;
   const endpoint = getTripsEndpoint();
-  const data = await fetchJson(`${base}${endpoint}`);
-  const mapped = mapTripsResponseToTours(data);
+  const url = new URL(`${base}${endpoint}`);
+  if (!url.searchParams.get("page")) url.searchParams.set("page", String(getTripsPage()));
+  if (!url.searchParams.get("per_page")) url.searchParams.set("per_page", String(getTripsPerPage()));
+  const finalUrl = url.toString();
+
+  const debug = isDebugEnabled();
+  if (debug) console.info("[FTS] Trips API URL:", finalUrl);
+
+  const res = await fetchJson(finalUrl);
+  if (debug) console.info("[FTS] Trips API status:", res.status);
+  if (!res.ok) {
+    if (debug) console.warn("[FTS] Trips API request failed:", res.data);
+    throw new Error(`Trips API failed (${res.status})`);
+  }
+
+  const mapped = mapTripsResponseToTours(res.data);
+  if (debug) console.info("[FTS] Trips mapped count:", mapped.length);
   return mapped.map(normalizeTour);
 }
 
@@ -65,8 +92,18 @@ let cache = null;
 export async function getTours({ forceRefresh = false } = {}) {
   if (cache && !forceRefresh) return cache;
 
-  const fromApi = await loadFromApi().catch(() => null);
-  cache = fromApi && fromApi.length ? fromApi : loadFromMock();
+  const debug = isDebugEnabled();
+  const fromApi = await loadFromApi().catch((e) => {
+    if (debug) console.warn("[FTS] Using mock fallback (API error):", e?.message || e);
+    return null;
+  });
+  if (fromApi && fromApi.length) {
+    if (debug) console.info("[FTS] Using API data");
+    cache = fromApi;
+  } else {
+    if (debug) console.warn("[FTS] Using mock fallback (empty API response)");
+    cache = loadFromMock();
+  }
   return cache;
 }
 
