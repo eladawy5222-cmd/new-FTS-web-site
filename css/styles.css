@@ -630,6 +630,16 @@ select option{
 }
 .grid--scroll > *{ scroll-snap-align: start; }
 
+.related-grid .tour-card__body{ padding: 12px 12px 8px; }
+.related-grid .tour-card__media{ aspect-ratio: 16 / 9; }
+.related-grid .tour-card__facts,
+.related-grid .tour-card__proof,
+.related-grid .tour-card__desc{ display:none; }
+.related-grid .tour-card__actions{
+  padding: 0 12px 12px;
+  grid-template-columns: 1fr;
+}
+
 .reviews{
   display:grid;
   grid-template-columns: repeat(12, 1fr);
@@ -1235,6 +1245,7 @@ select option{
     gap: 12px;
   }
   .grid--scroll.grid--cards > *{ grid-column: auto; }
+  .related-grid{ grid-auto-columns: minmax(220px, 78%); }
 
   .gallery__thumbs{
     flex-wrap: nowrap;
