@@ -1,7 +1,7 @@
 import { getRelatedTours, getTourBySlug } from "./toursRepository.js";
 import { getDecisionCues } from "./decision.js";
 import { getWhatsAppE164 } from "./config.js";
-import { buildBookingUrl, createBadge, createTourCard, formatPrice, initHeader, qs, qsa, renderStars } from "./ui.js";
+import { buildBookingUrl, createBadge, createTourCard, formatPrice, getFallbackTourImage, initHeader, qs, qsa, renderStars } from "./ui.js";
 
 function buildWhatsAppLink({ phoneE164Digits, text }) {
   const base = `https://wa.me/${phoneE164Digits}`;
@@ -130,15 +130,25 @@ async function init() {
 
   const mainImg = qs("[data-gallery-main]");
   const thumbs = qs("[data-gallery-thumbs]");
-  const imgs = Array.isArray(tour.gallery) && tour.gallery.length ? tour.gallery : [tour.image].filter(Boolean);
+  const imgsRaw = Array.isArray(tour.gallery) && tour.gallery.length ? tour.gallery : [tour.image].filter(Boolean);
+  const imgs = imgsRaw.length ? imgsRaw : [getFallbackTourImage(tour)];
 
   const setMain = (src) => {
-    mainImg.src = src;
+    const safe = String(src || "").trim() || getFallbackTourImage(tour);
+    mainImg.src = safe;
     mainImg.alt = tour.title;
     qsa(".thumb", thumbs).forEach((t) => t.setAttribute("aria-current", "false"));
-    const active = qsa(".thumb", thumbs).find((el) => el.getAttribute("data-src") === src);
+    const active = qsa(".thumb", thumbs).find((el) => el.getAttribute("data-src") === safe);
     if (active) active.setAttribute("aria-current", "true");
   };
+
+  mainImg.addEventListener(
+    "error",
+    () => {
+      mainImg.src = getFallbackTourImage(tour);
+    },
+    { once: true }
+  );
 
   thumbs.innerHTML = "";
   imgs.forEach((src, idx) => {
@@ -151,6 +161,13 @@ async function init() {
     i.loading = "lazy";
     i.alt = "";
     i.src = src;
+    i.addEventListener(
+      "error",
+      () => {
+        i.src = getFallbackTourImage(tour);
+      },
+      { once: true }
+    );
     b.appendChild(i);
     b.addEventListener("click", () => setMain(src));
     thumbs.appendChild(b);
