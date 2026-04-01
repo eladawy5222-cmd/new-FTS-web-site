@@ -373,7 +373,7 @@ select option{
   position:absolute;
   inset: -180px -40px -60px -40px;
   background:
-    url("assets/images/home-hero-bg.svg") center / cover no-repeat,
+    url("../assets/images/home-hero-bg.svg") center / cover no-repeat,
     radial-gradient(circle at 22% 22%, rgba(86,224,196,.28), transparent 54%),
     radial-gradient(circle at 72% 28%, rgba(78,167,255,.22), transparent 58%),
     radial-gradient(circle at 58% 78%, rgba(255,209,102,.16), transparent 60%);
