@@ -1231,9 +1231,10 @@ select option{
   .grid--scroll{
     grid-template-columns: none;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(280px, 1fr);
+    grid-auto-columns: minmax(260px, 86%);
     gap: 12px;
   }
+  .grid--scroll.grid--cards > *{ grid-column: auto; }
 
   .gallery__thumbs{
     flex-wrap: nowrap;
