@@ -14,29 +14,6 @@ export function formatPrice(amount) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 }
 
-export function getFallbackTourImage(tour) {
-  const category = String(tour?.category || "").toLowerCase();
-  const location = String(tour?.location || "").toLowerCase();
-  if (category.includes("snork") || category.includes("sea") || category.includes("boat")) return "assets/images/reef.svg";
-  if (category.includes("desert") || category.includes("safari")) return "assets/images/desert.svg";
-  if (category.includes("food") || category.includes("bazaar")) return "assets/images/bazaar.svg";
-  if (category.includes("museum")) return "assets/images/museum.svg";
-  if (location.includes("cairo")) return "assets/images/cairo.svg";
-  if (location.includes("luxor")) return "assets/images/luxor.svg";
-  if (location.includes("aswan")) return "assets/images/aswan.svg";
-  if (location.includes("hurghada")) return "assets/images/hurghada.svg";
-  if (location.includes("sharm")) return "assets/images/sharm.svg";
-  return "assets/images/temple.svg";
-}
-
-export function getTourImageUrl(tour) {
-  const direct = String(tour?.image || "").trim();
-  if (direct) return direct;
-  const g = Array.isArray(tour?.gallery) ? tour.gallery.map((x) => String(x || "").trim()).filter(Boolean) : [];
-  if (g.length) return g[0];
-  return getFallbackTourImage(tour);
-}
-
 export function clamp(num, min, max) {
   return Math.min(max, Math.max(min, num));
 }
@@ -107,14 +84,7 @@ export function createTourCard(tour, { compact = false } = {}) {
   img.className = "tour-card__img";
   img.loading = "lazy";
   img.alt = tour.title;
-  img.src = getTourImageUrl(tour);
-  img.addEventListener(
-    "error",
-    () => {
-      img.src = getFallbackTourImage(tour);
-    },
-    { once: true }
-  );
+  img.src = tour.image;
   media.appendChild(img);
 
   if (Array.isArray(tour.badges) && tour.badges.length) {
