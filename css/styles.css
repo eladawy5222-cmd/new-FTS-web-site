@@ -25,7 +25,7 @@
 }
 
 *{ box-sizing: border-box; }
-html,body{ height:100%; overflow-x: clip; }
+html,body{ height:100%; overflow-x: hidden; }
 body{
   margin:0;
   font-family: var(--font);
@@ -139,7 +139,7 @@ select option{
   *{ scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
 
-.container{ width: min(var(--max), calc(100% - 2*var(--pad))); margin: 0 auto; }
+.container{ width: min(var(--max), calc(100% - var(--pad) - var(--pad))); margin: 0 auto; }
 .muted{ color: var(--muted); }
 .sr-only{
   position:absolute;
@@ -760,6 +760,7 @@ select option{
   gap: 18px;
   align-items: start;
 }
+.layout > *{ min-width: 0; }
 .layout > aside{ position: sticky; top: 92px; }
 .panel{
   background: rgba(255,255,255,.05);
@@ -884,6 +885,7 @@ select option{
   gap: 18px;
   align-items: start;
 }
+.two-col > *{ min-width: 0; }
 .card{
   background: rgba(255,255,255,.05);
   border: 1px solid rgba(255,255,255,.12);
@@ -1194,7 +1196,7 @@ select option{
     top: calc(100% + 12px);
     right: 0;
     min-width: 220px;
-    max-width: calc(100vw - 2*var(--pad));
+    max-width: calc(100vw - var(--pad) - var(--pad));
     max-height: 70vh;
     overflow: auto;
     overscroll-behavior: contain;
@@ -1240,6 +1242,7 @@ select option{
     padding-bottom: 6px;
   }
   .thumb{ flex: 0 0 auto; width: 84px; height: 56px; }
+  .gallery__main{ aspect-ratio: 4 / 3; }
 }
 
 @media (max-width: 540px){
