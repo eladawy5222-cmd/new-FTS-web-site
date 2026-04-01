@@ -407,6 +407,7 @@ export function mapWpTripToTour(trip) {
   const tax = pick(trip, ["taxonomies"], {});
 
   const id = String(pick(trip, ["core.id", "core.ID", "id", "ID"], "") || "");
+  const status = String(pick(trip, ["core.status", "status", "post_status"], "") || "").trim();
   const titleRaw = pick(trip, ["core.title.rendered", "core.title", "title.rendered", "title", "general.title", "post_title"], "");
   const title = decodeHtmlEntities(htmlToText(titleRaw) || String(titleRaw || ""));
   const slugPicked = String(pick(trip, ["core.slug", "core.permalink_slug", "slug", "post_name"], "") || "");
@@ -476,6 +477,7 @@ export function mapWpTripToTour(trip) {
 
   return {
     id,
+    status,
     title,
     slug,
     location,
@@ -510,5 +512,8 @@ export function mapTripsResponseToTours(data) {
   const root = data && typeof data === "object" ? data : {};
   const list =
     Array.isArray(data) ? data : Array.isArray(root.trips) ? root.trips : Array.isArray(root.items) ? root.items : Array.isArray(root.data) ? root.data : [];
-  return list.map(mapWpTripToTour).filter((t) => t && t.slug);
+  return list
+    .map(mapWpTripToTour)
+    .filter((t) => t && t.slug)
+    .filter((t) => !t.status || t.status === "publish");
 }
