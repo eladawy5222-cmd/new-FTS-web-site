@@ -1,4 +1,5 @@
 tore --staged .
-erver 4173
-tatus -sb'
 *.zip
+api_dump.json
+trip*.json
+test.js

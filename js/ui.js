@@ -1,4 +1,5 @@
 import { getDecisionCues } from "./decision.js";
+import { getDisplayCurrency } from "./config.js";
 
 export function qs(selector, root = document) {
   return root.querySelector(selector);
@@ -8,10 +9,18 @@ export function qsa(selector, root = document) {
   return Array.from(root.querySelectorAll(selector));
 }
 
-export function formatPrice(amount) {
+export function formatPrice(amount, currency) {
   const n = Number(amount);
   if (!Number.isFinite(n)) return "";
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+  const code = String(currency || getDisplayCurrency() || "USD")
+    .trim()
+    .toUpperCase();
+  const safe = /^[A-Z]{3}$/.test(code) ? code : "USD";
+  try {
+    return new Intl.NumberFormat(undefined, { style: "currency", currency: safe, maximumFractionDigits: 0 }).format(n);
+  } catch {
+    return new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(n);
+  }
 }
 
 export function clamp(num, min, max) {
@@ -108,11 +117,13 @@ export function createTourCard(tour, { compact = false } = {}) {
 
   const pricePill = document.createElement("div");
   pricePill.className = "tour-card__pricepill";
-  pricePill.innerHTML = `<span class="tour-card__from">From</span><span class="tour-card__amount">${escapeHtml(formatPrice(tour.price))}</span>`;
+  pricePill.innerHTML = `<span class="tour-card__from">From</span><span class="tour-card__amount">${escapeHtml(
+    formatPrice(tour.price, tour.currency)
+  )}</span>`;
   if (tour.oldPrice && tour.oldPrice > tour.price) {
     const old = document.createElement("span");
     old.className = "tour-card__old";
-    old.textContent = formatPrice(tour.oldPrice);
+    old.textContent = formatPrice(tour.oldPrice, tour.currency);
     pricePill.appendChild(old);
   }
 

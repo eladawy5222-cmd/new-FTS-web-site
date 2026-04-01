@@ -128,10 +128,10 @@ async function init() {
   mountItinerary(qs("[data-itinerary]"), tour.itinerary);
 
   const price = qs("[data-price]");
-  price.textContent = formatPrice(tour.price);
+  price.textContent = formatPrice(tour.price, tour.currency);
 
   const old = qs("[data-old-price]");
-  if (tour.oldPrice && tour.oldPrice > tour.price) old.textContent = formatPrice(tour.oldPrice);
+  if (tour.oldPrice && tour.oldPrice > tour.price) old.textContent = formatPrice(tour.oldPrice, tour.currency);
   else old.textContent = "";
 
   const cues = getDecisionCues(tour);
@@ -202,20 +202,17 @@ async function init() {
 
   const reviewsHost = qs("[data-reviews]");
   reviewsHost.innerHTML = "";
-  buildMockReviews(tour).forEach((rev) => {
-    const el = document.createElement("div");
-    el.className = "review";
-    const title = document.createElement("strong");
-    title.textContent = `${rev.name} • ${(Number(rev.rating) || 0).toFixed(1)}`;
-    const stars = renderStars(rev.rating);
-    stars.style.marginTop = "6px";
-    const p = document.createElement("p");
-    p.textContent = rev.text;
-    el.appendChild(title);
-    el.appendChild(stars);
-    el.appendChild(p);
-    reviewsHost.appendChild(el);
-  });
+  if (hasReviews) {
+    const note = document.createElement("div");
+    note.className = "muted";
+    note.textContent = "Traveler reviews will appear here when available.";
+    reviewsHost.appendChild(note);
+  } else {
+    const note = document.createElement("div");
+    note.className = "muted";
+    note.textContent = "No reviews yet for this experience.";
+    reviewsHost.appendChild(note);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);

@@ -20,9 +20,18 @@ function pick(obj, paths, fallback = "") {
 function num(v) {
   if (v == null) return null;
   if (typeof v === "number" && Number.isFinite(v)) return v;
-  const s = String(v).replace(/[^\d.]/g, "");
+  const s = String(v)
+    .replaceAll(",", "")
+    .replace(/[^\d.-]/g, "");
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
+}
+
+function normalizeCurrencyCode(v) {
+  const raw = String(v || "").trim().toUpperCase();
+  if (!raw) return "";
+  if (/^[A-Z]{3}$/.test(raw)) return raw;
+  return "";
 }
 
 function listFromUnknown(v) {
@@ -49,13 +58,19 @@ function listFromUnknown(v) {
 function listFromNewlines(v) {
   if (!v) return [];
   if (Array.isArray(v)) return listFromUnknown(v);
-  const text = htmlToText(v);
+  const raw = String(v || "").replaceAll("\\r", "\r").replaceAll("\\n", "\n");
+  const normalized = raw
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|li|h2|h3|h4)>\s*/gi, "\n")
+    .replace(/<li[^>]*>/gi, "\n");
+  const text = decodeHtmlEntities(normalized.replace(/<[^>]*>/g, ""));
   if (!text) return [];
   const lines = text
     .split(/\r?\n/g)
     .map((x) => x.trim())
     .filter(Boolean);
-  return lines.length ? lines : listFromUnknown(text);
+  if (lines.length > 1) return lines;
+  return listFromUnknown(text);
 }
 
 function firstTermName(tax, keys) {
@@ -93,19 +108,46 @@ function extractMediaUrls(v) {
   if (!v) return [];
   if (Array.isArray(v)) {
     return v
-      .map((x) => (typeof x === "string" ? x : x?.url || x?.src || x?.image || x?.full || x?.sizes?.large))
+      .map((x) =>
+        typeof x === "string"
+          ? x
+          : x?.url ||
+            x?.src ||
+            x?.source_url ||
+            x?.guid?.rendered ||
+            x?.image ||
+            x?.full ||
+            x?.sizes?.large ||
+            x?.sizes?.medium_large ||
+            x?.sizes?.medium ||
+            x?.media_details?.sizes?.large?.source_url ||
+            x?.media_details?.sizes?.medium_large?.source_url ||
+            x?.media_details?.sizes?.medium?.source_url
+      )
       .map((x) => String(x || "").trim())
       .filter(Boolean);
   }
   if (typeof v === "object") {
-    const url = v.url || v.src || v.full || v.sizes?.large || v.sizes?.medium_large || v.sizes?.medium;
+    const url =
+      v.url ||
+      v.src ||
+      v.source_url ||
+      v.guid?.rendered ||
+      v.full ||
+      v.sizes?.large ||
+      v.sizes?.medium_large ||
+      v.sizes?.medium ||
+      v.media_details?.sizes?.large?.source_url ||
+      v.media_details?.sizes?.medium_large?.source_url ||
+      v.media_details?.sizes?.medium?.source_url;
     return url ? [String(url)] : [];
   }
   return [];
 }
 
-function derivePricing(pricing) {
+function derivePricing(pricing, { pax = 1 } = {}) {
   const p = pricing && typeof pricing === "object" ? pricing : {};
+  const rootCurrency = normalizeCurrencyCode(p.currency);
 
   const packages = Array.isArray(p.packages) ? p.packages : Array.isArray(p.package_pricing) ? p.package_pricing : [];
   if (packages.length) {
@@ -115,16 +157,46 @@ function derivePricing(pricing) {
       const cats = pkg?.pricing?.categories;
       if (Array.isArray(cats) && cats.length) {
         cats.forEach((cat) => {
-          const price = num(cat?.sale_price ?? cat?.actual_price ?? cat?.price ?? cat?.cost ?? null);
+          const currency = normalizeCurrencyCode(cat?.currency) || rootCurrency;
           const regular = num(cat?.regular_price ?? cat?.base_price ?? cat?.original_price ?? null);
-          if (price != null || regular != null) entries.push({ price: price != null ? price : regular, regular });
+          const saleEnabled = Boolean(cat?.sale_enabled ?? cat?.enabled_sale ?? cat?.sale ?? false);
+          const sale = num(cat?.sale_price ?? null);
+          const actual = num(cat?.actual_price ?? cat?.price ?? cat?.cost ?? null);
+
+          let price = null;
+          if (saleEnabled && sale != null && sale > 0) price = sale;
+          else if (sale != null && regular != null && sale > 0 && sale < regular) price = sale;
+          else price = actual != null ? actual : sale != null ? sale : regular;
+
+          const gp = Array.isArray(cat?.group_pricing) ? cat.group_pricing : [];
+          if (gp.length) {
+            const tier = gp.find((t) => {
+              const from = num(t?.from);
+              const to = num(t?.to);
+              if (from == null || to == null) return false;
+              return pax >= from && pax <= to;
+            });
+            const tierPrice = num(tier?.price);
+            if (tierPrice != null && tierPrice > 0) price = tierPrice;
+          }
+
+          if (price != null || regular != null) entries.push({ price: price != null ? price : regular, regular, currency });
         });
         return;
       }
 
-      const price = num(pkg?.actual_price ?? pkg?.sale_price ?? pkg?.price ?? pkg?.cost ?? null);
-      const regular = num(pkg?.base_price ?? pkg?.regular_price ?? null);
-      if (price != null || regular != null) entries.push({ price: price != null ? price : regular, regular });
+      const currency = normalizeCurrencyCode(pkg?.currency) || rootCurrency;
+      const regular = num(pkg?.regular_price ?? pkg?.base_price ?? null);
+      const sale = num(pkg?.sale_price ?? null);
+      const actual = num(pkg?.actual_price ?? pkg?.price ?? pkg?.cost ?? null);
+      const saleEnabled = Boolean(pkg?.sale_enabled ?? pkg?.enabled_sale ?? false);
+
+      let price = null;
+      if (saleEnabled && sale != null && sale > 0) price = sale;
+      else if (sale != null && regular != null && sale > 0 && sale < regular) price = sale;
+      else price = actual != null ? actual : sale != null ? sale : regular;
+
+      if (price != null || regular != null) entries.push({ price: price != null ? price : regular, regular, currency });
     });
 
     const best = entries
@@ -133,14 +205,31 @@ function derivePricing(pricing) {
 
     const price = best?.price != null ? best.price : 0;
     const oldPrice = best?.regular != null && best.regular > price ? best.regular : null;
-    return { price, oldPrice };
+    const currency = best?.currency || rootCurrency || "";
+    return { price, oldPrice, currency };
   }
 
-  const actual = num(p.actual_price ?? p.sale_price ?? p.from_price ?? p.price ?? p.cost ?? null);
-  const base = num(p.base_price ?? p.regular_price ?? p.original_price ?? null);
-  const price = actual != null ? actual : base != null ? base : 0;
-  const oldPrice = base != null && base > price ? base : null;
-  return { price, oldPrice };
+  const currency = rootCurrency;
+  const sale = num(p.sale_price ?? null);
+  const regular = num(p.regular_price ?? null);
+  const actual = num(p.actual_price ?? p.from_price ?? p.price ?? p.cost ?? null);
+  const base = num(p.base_price ?? p.original_price ?? null);
+
+  if (sale != null && regular != null) {
+    const price = sale > 0 ? sale : regular;
+    const oldPrice = regular > price ? regular : null;
+    return { price, oldPrice, currency };
+  }
+
+  if (actual != null && base != null) {
+    const price = Math.min(actual, base);
+    const oldPrice = Math.max(actual, base) > price ? Math.max(actual, base) : null;
+    return { price, oldPrice, currency };
+  }
+
+  const price = sale != null ? sale : actual != null ? actual : base != null ? base : regular != null ? regular : 0;
+  const oldPrice = regular != null && regular > price ? regular : null;
+  return { price, oldPrice, currency };
 }
 
 function buildBadges({ featured, rating, reviewsCount, cancellation, instant }) {
@@ -154,9 +243,45 @@ function buildBadges({ featured, rating, reviewsCount, cancellation, instant }) 
 }
 
 function pickFeaturedImage(trip) {
-  const f = pick(trip, ["featured_image"], null);
+  const f = pick(trip, ["featured_image", "core.featured_image", "general.featured_image", "media.featured_image"], null);
   const urls = extractMediaUrls(f);
   return urls[0] || "";
+}
+
+function extractWpGalleryIds(settings, metaRoot) {
+  const raw =
+    pick(settings, ["wpte_gallery_id"], null) ||
+    pick(metaRoot, ["wpte_gallery_id", "wp_travel_engine_setting.wpte_gallery_id"], null);
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return [];
+  const out = [];
+  Object.entries(raw).forEach(([k, v]) => {
+    if (k === "enable") return;
+    const n = num(v);
+    if (n != null && n > 0) out.push(Math.floor(n));
+  });
+  return out;
+}
+
+function extractDestinationTerms(tax) {
+  const obj = tax && typeof tax === "object" ? tax : {};
+  const keys = ["locations", "location", "destinations", "destination", "places", "place"];
+  for (const key of keys) {
+    const v = obj[key];
+    if (Array.isArray(v) && v.length) {
+      return v
+        .map((t) => String(t?.name || t?.label || t?.title || t || "").trim())
+        .map((s) => decodeHtmlEntities(htmlToText(s)))
+        .filter(Boolean);
+    }
+  }
+  return [];
+}
+
+function pickPrimaryDestination(destinations) {
+  const list = Array.isArray(destinations) ? destinations.map((x) => String(x || "").trim()).filter(Boolean) : [];
+  if (!list.length) return "";
+  const nonGeneric = list.find((x) => !["egypt"].includes(x.toLowerCase()));
+  return nonGeneric || list[list.length - 1] || "";
 }
 
 function fallbackImageByLocation(location) {
@@ -196,6 +321,29 @@ function normalizeItinerary(v) {
       }))
       .filter((x) => x.title || x.description);
   }
+  if (typeof v === "object") {
+    const titleMap = v?.itinerary_title;
+    const contentMap = v?.itinerary_content;
+    const daysLabelMap = v?.itinerary_days_label;
+    if (titleMap && typeof titleMap === "object" && contentMap && typeof contentMap === "object") {
+      const keys = Array.from(
+        new Set([
+          ...Object.keys(titleMap || {}),
+          ...Object.keys(contentMap || {}),
+          ...Object.keys(daysLabelMap || {}),
+        ])
+      )
+        .filter((k) => /^\d+$/.test(String(k)))
+        .sort((a, b) => Number(a) - Number(b));
+      const items = keys
+        .map((k) => ({
+          title: String(daysLabelMap?.[k] || titleMap?.[k] || `Day ${k}`).trim(),
+          description: htmlToText(contentMap?.[k] || ""),
+        }))
+        .filter((x) => x.title || x.description);
+      if (items.length) return items;
+    }
+  }
   const text = htmlToText(v);
   const lines = text.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
   return lines.slice(0, 8).map((line, idx) => ({ title: `Stop ${idx + 1}`, description: line }));
@@ -203,29 +351,30 @@ function normalizeItinerary(v) {
 
 export function mapWpTripToTour(trip) {
   const core = pick(trip, ["core"], {});
-  const meta = pick(trip, ["meta.wp_travel_engine_setting", "meta", "wp_travel_engine_setting"], {});
+  const metaRoot = pick(trip, ["meta"], {});
+  const settings = pick(trip, ["meta.wp_travel_engine_setting", "wp_travel_engine_setting"], {});
   const tax = pick(trip, ["taxonomies"], {});
 
   const id = String(pick(trip, ["core.id", "core.ID", "id", "ID"], "") || "");
   const titleRaw = pick(trip, ["core.title.rendered", "core.title", "title.rendered", "title", "general.title", "post_title"], "");
   const title = decodeHtmlEntities(htmlToText(titleRaw) || String(titleRaw || ""));
-  const slug = String(pick(trip, ["core.slug", "slug", "post_name"], "") || "");
+  const slugPicked = String(pick(trip, ["core.slug", "core.permalink_slug", "slug", "post_name"], "") || "");
+  const slug = slugPicked || id;
 
-  const location =
-    firstTermName(tax, ["locations", "location", "destinations", "destination", "places", "place"]) ||
-    String(pick(trip, ["general.location", "location"], "") || "");
+  const destinations = extractDestinationTerms(tax);
+  const location = pickPrimaryDestination(destinations) || String(pick(trip, ["general.location", "location"], "") || "");
   const category =
     firstTermName(tax, ["categories", "category", "activities", "activity", "trip_categories", "trip_category"]) ||
     String(pick(trip, ["general.category", "category"], "") || "");
   const type =
     firstTermName(tax, ["types", "type", "trip_types", "trip_type"]) || String(pick(trip, ["general.type", "type"], "") || "");
 
-  const duration = parseDuration(pick(trip, ["general.duration", "duration"], ""), meta);
+  const duration = parseDuration(pick(trip, ["general.duration", "duration"], ""), metaRoot);
 
   const rating = num(pick(trip, ["general.rating", "rating", "meta.rating", "core.rating"], null));
   const reviewsCount = num(pick(trip, ["general.reviewsCount", "general.reviews", "reviewsCount", "reviews", "meta.reviewsCount"], null));
 
-  const pricing = derivePricing(pick(trip, ["pricing", "general.pricing", "meta.pricing"], {}));
+  const pricing = derivePricing(pick(trip, ["pricing", "general.pricing", "meta.pricing"], {}), { pax: 1 });
 
   const featured = Boolean(pick(trip, ["general.featured", "featured", "core.featured", "meta.featured", "core.sticky"], false));
   const cancellation = String(pick(trip, ["general.cancellation", "cancellation", "meta.cancellation_policy", "meta.cancellation"], "") || "");
@@ -237,6 +386,17 @@ export function mapWpTripToTour(trip) {
   const badges = buildBadges({ featured, rating, reviewsCount, cancellation, instant });
 
   const image = pickFeaturedImage(trip);
+  const featuredImageId = Math.floor(
+    num(pick(trip, ["featured_image.id", "featured_image.ID", "core.featured_image.id", "meta._thumbnail_id"], null)) || 0
+  );
+  const referencedMediaIds = Array.isArray(metaRoot?.referenced_media_ids)
+    ? metaRoot.referenced_media_ids
+        .map((x) => Math.floor(num(x) || 0))
+        .filter((x) => Number.isFinite(x) && x > 0)
+    : [];
+  const galleryIds = Array.from(new Set([...extractWpGalleryIds(settings, metaRoot), ...referencedMediaIds])).filter(
+    (x) => x !== featuredImageId
+  );
   const gallery = [
     ...extractMediaUrls(pick(trip, ["gallery", "general.gallery", "media.gallery"], null)),
     ...extractMediaUrls(pick(trip, ["core.gallery", "meta.gallery"], null)),
@@ -246,10 +406,16 @@ export function mapWpTripToTour(trip) {
   const excerpt = pickExcerpt(trip);
   const shortDescription = truncate(excerpt || htmlToText(fullDescription) || "", 160);
 
-  const highlights = listFromUnknown(pick(meta, ["trip_highlights", "highlights", "general.highlights"], null)).slice(0, 10);
-  const included = listFromNewlines(pick(meta, ["cost.cost_includes"], null)).slice(0, 16);
-  const excluded = listFromNewlines(pick(meta, ["cost.cost_excludes"], null)).slice(0, 16);
-  const itinerary = normalizeItinerary(pick(meta, ["trip_itinerary", "itinerary", "general.itinerary"], null)).slice(0, 10);
+  const highlights = listFromUnknown(pick(settings, ["trip_highlights", "highlights"], null)).slice(0, 10);
+  const includedRaw =
+    pick(settings, ["cost.cost_includes"], null) ||
+    pick(trip, ["general.raw.cost.cost_includes", "pricing.raw.settings.cost.cost_includes", "general.raw.settings.cost.cost_includes"], null);
+  const excludedRaw =
+    pick(settings, ["cost.cost_excludes"], null) ||
+    pick(trip, ["general.raw.cost.cost_excludes", "pricing.raw.settings.cost.cost_excludes", "general.raw.settings.cost.cost_excludes"], null);
+  const included = listFromNewlines(includedRaw).slice(0, 16);
+  const excluded = listFromNewlines(excludedRaw).slice(0, 16);
+  const itinerary = normalizeItinerary(pick(settings, ["trip_itinerary", "itinerary"], null)).slice(0, 10);
 
   const primaryImage = image || gallery[0] || fallbackImageByLocation(location);
   const safeGallery = gallery.length ? gallery : primaryImage ? [primaryImage] : [];
@@ -259,12 +425,14 @@ export function mapWpTripToTour(trip) {
     title,
     slug,
     location,
+    destinations,
     category,
     duration,
     rating,
     reviewsCount,
     price: pricing.price || 0,
     oldPrice: pricing.oldPrice,
+    currency: pricing.currency || "",
     badges,
     image: primaryImage,
     gallery: safeGallery,
@@ -277,6 +445,10 @@ export function mapWpTripToTour(trip) {
     cancellation,
     type,
     featured,
+    _mediaIds: {
+      featuredImageId: featuredImageId > 0 ? featuredImageId : null,
+      galleryIds,
+    },
   };
 }
 

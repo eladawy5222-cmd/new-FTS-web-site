@@ -1131,5 +1131,17 @@ button,input,select,textarea{ font: inherit; }
     grid-auto-columns: minmax(280px, 1fr);
     gap: 12px;
   }
+
+  .gallery__thumbs{
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+  .thumb{ flex: 0 0 auto; width: 84px; height: 56px; }
 }
 
+@media (max-width: 540px){
+  .footer__grid{ grid-template-columns: 1fr; }
+  .brand{ min-width: 0; }
+}

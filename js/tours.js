@@ -1,5 +1,6 @@
 import { buildBookingUrl, buildTourUrl, escapeHtml, initHeader, mountTourGrid, qs, qsa, setFormFromParams, updateParamsFromForm } from "./ui.js";
 import { buildFacetOptions, filterTours, parseStateFromParams, sortTours } from "./filters.js";
+import { getDisplayCurrency } from "./config.js";
 import { getTours } from "./toursRepository.js";
 import { getDecisionCues } from "./decision.js";
 
@@ -21,6 +22,7 @@ function fillSelect(select, values, { placeholder = "Any" } = {}) {
 function renderActiveChips(state, host, { onClearOne, onClearAll } = {}) {
   host.innerHTML = "";
   const chips = [];
+  const currency = getDisplayCurrency();
 
   const add = (label, key) => {
     const c = document.createElement("button");
@@ -37,8 +39,8 @@ function renderActiveChips(state, host, { onClearOne, onClearAll } = {}) {
   if (state.type) add(`Type: ${state.type}`, "type");
   if (Number(state.ratingMin)) add(`Rating: ${state.ratingMin}+`, "ratingMin");
   if (state.duration) add(`Duration: ${durationLabel(state.duration)}`, "duration");
-  if (state.priceMin != null) add(`Min: $${state.priceMin}`, "priceMin");
-  if (state.priceMax != null) add(`Max: $${state.priceMax}`, "priceMax");
+  if (state.priceMin != null) add(`Min: ${currency} ${state.priceMin}`, "priceMin");
+  if (state.priceMax != null) add(`Max: ${currency} ${state.priceMax}`, "priceMax");
 
   if (!chips.length) {
     const p = document.createElement("div");

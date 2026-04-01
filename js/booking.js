@@ -60,7 +60,7 @@ async function init() {
   }
   ratingHost.appendChild(ratingWrap);
 
-  qs("[data-price-each]").textContent = formatPrice(tour.price);
+  qs("[data-price-each]").textContent = formatPrice(tour.price, tour.currency);
   qs("[data-cancellation]").textContent = tour.cancellation || "Cancellation policy will be shown here.";
 
   const form = qs("[data-booking-form]");
@@ -80,7 +80,7 @@ async function init() {
 
     qs("[data-travelers]").textContent = String(travelers);
     qs("[data-date]").textContent = date || "—";
-    qs("[data-total]").textContent = formatPrice((Number(tour.price) || 0) * travelers);
+    qs("[data-total]").textContent = formatPrice((Number(tour.price) || 0) * travelers, tour.currency);
 
     const msg = [
       "Hi FTS Travels, I'd like to book:",

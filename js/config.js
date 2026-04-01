@@ -3,6 +3,7 @@ const DEFAULT_TRIP_API_BASE = "https://ftstravels.com/wp-json";
 const DEFAULT_TRIPS_ENDPOINT = "/fts/v1/trips";
 const DEFAULT_TRIPS_PAGE = 1;
 const DEFAULT_TRIPS_PER_PAGE = 50;
+const DEFAULT_DISPLAY_CURRENCY = "USD";
 
 if (typeof window !== "undefined") {
   const existing = String(window.FTS_WHATSAPP_E164 || "").trim();
@@ -19,6 +20,9 @@ if (typeof window !== "undefined") {
 
   const perExisting = String(window.FTS_TRIPS_PER_PAGE || "").trim();
   if (!perExisting && DEFAULT_TRIPS_PER_PAGE) window.FTS_TRIPS_PER_PAGE = DEFAULT_TRIPS_PER_PAGE;
+
+  const currencyExisting = String(window.FTS_DISPLAY_CURRENCY || "").trim();
+  if (!currencyExisting && DEFAULT_DISPLAY_CURRENCY) window.FTS_DISPLAY_CURRENCY = DEFAULT_DISPLAY_CURRENCY;
 }
 
 export function getWhatsAppE164() {
@@ -52,4 +56,10 @@ export function getTripsPerPage() {
   const n = Number(raw);
   if (!Number.isFinite(n) || n <= 0) return DEFAULT_TRIPS_PER_PAGE;
   return Math.min(200, Math.floor(n));
+}
+
+export function getDisplayCurrency() {
+  const raw = typeof window !== "undefined" ? String(window.FTS_DISPLAY_CURRENCY || DEFAULT_DISPLAY_CURRENCY) : DEFAULT_DISPLAY_CURRENCY;
+  const code = raw.trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(code) ? code : DEFAULT_DISPLAY_CURRENCY;
 }

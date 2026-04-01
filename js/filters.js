@@ -2,9 +2,12 @@ import { matchesSearch } from "./search.js";
 
 export function buildFacetOptions(tours) {
   const uniq = (arr) => Array.from(new Set(arr.filter(Boolean))).sort((a, b) => a.localeCompare(b));
+  const allDestinations = tours.flatMap((t) =>
+    (Array.isArray(t.destinations) && t.destinations.length ? t.destinations : [t.location]).filter(Boolean)
+  );
 
   return {
-    locations: uniq(tours.map((t) => t.location)),
+    locations: uniq(allDestinations),
     categories: uniq(tours.map((t) => t.category)),
     types: uniq(tours.map((t) => t.type)),
     price: {
@@ -37,7 +40,10 @@ export function parseStateFromParams(params) {
 export function filterTours(tours, state) {
   return tours.filter((t) => {
     if (!matchesSearch(t, state.q)) return false;
-    if (state.location && t.location !== state.location) return false;
+    if (state.location) {
+      const list = Array.isArray(t.destinations) && t.destinations.length ? t.destinations : [t.location].filter(Boolean);
+      if (!list.includes(state.location)) return false;
+    }
     if (state.category && t.category !== state.category) return false;
     if (state.type && t.type !== state.type) return false;
     if (Number(state.ratingMin) && Number(t.rating) < Number(state.ratingMin)) return false;
@@ -85,4 +91,3 @@ export function sortTours(tours, sortKey) {
   });
   return by;
 }
-
