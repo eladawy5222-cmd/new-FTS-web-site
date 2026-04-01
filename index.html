@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FTS Travels v2 — Premium Egypt Tours & Experiences</title>
+    <title>FTS Travels — Premium Egypt Tours & Experiences</title>
     <meta
       name="description"
       content="Discover premium Egypt tours with fast booking, trusted local experts, and flexible cancellation. Cairo, Luxor, Aswan, Hurghada, and Sharm El Sheikh."
@@ -18,8 +18,8 @@
         <a class="brand" href="index.html" aria-label="FTS Travels home">
           <div class="logo" aria-hidden="true"></div>
           <div class="brand__name">
-            <strong>FTS Travels v2</strong>
-            <span>Egypt-based experiences</span>
+            <strong>FTS Travels</strong>
+            <span>Premium Egypt experiences</span>
           </div>
         </a>
 
@@ -51,10 +51,10 @@
               <span class="pill">Instant confirmation</span>
               <span class="pill">Trusted local experts</span>
             </div>
-            <h1>Book unforgettable Egypt experiences — fast, safe, and beautifully planned.</h1>
+            <h1>Book unforgettable Egypt experiences — premium tours, real reviews, and confident booking.</h1>
             <p>
-              A premium marketplace for tours across Cairo, Luxor, Aswan, Hurghada, and Sharm El Sheikh. Transparent
-              prices, real reviews, and a booking flow designed for confidence.
+              Explore Cairo, Luxor, Aswan, Hurghada, and Sharm El Sheikh with experiences curated by local experts.
+              Compare ratings, see what’s included, and reserve in minutes.
             </p>
             <div class="hero__actions">
               <a class="btn btn--primary" href="tours.html">Explore tours</a>
@@ -90,7 +90,7 @@
                 <input id="date" type="date" name="date" />
               </div>
               <button class="btn btn--primary" type="submit">Search tours</button>
-              <div class="hero__fineprint">Limited spots available on top-rated experiences this week.</div>
+              <div class="hero__fineprint">High-demand dates sell out first — reserve early for the best pick-up times.</div>
             </form>
           </div>
         </div>
@@ -200,7 +200,7 @@
           <div class="section__head">
             <div>
               <h2 class="section__title">What travelers say</h2>
-              <p class="section__sub">Mock testimonials (replace with real reviews later).</p>
+              <p class="section__sub">Recent traveler feedback on guides, timing, and overall experience.</p>
             </div>
           </div>
           <div class="testimonials">
@@ -228,14 +228,54 @@
           </div>
         </div>
       </section>
+
+      <section class="section" id="support">
+        <div class="container">
+          <div class="section__head">
+            <div>
+              <h2 class="section__title">Booking help & policies</h2>
+              <p class="section__sub">Clear answers before you reserve — designed to make decisions easy.</p>
+            </div>
+          </div>
+
+          <div class="faqs">
+            <details class="faq" open>
+              <summary>Is it safe to book with FTS Travels?</summary>
+              <div class="faq__body">
+                We focus on transparent tour information, clear cancellation terms, and support via WhatsApp if you need help before or during your experience.
+              </div>
+            </details>
+            <details class="faq">
+              <summary>How does confirmation work?</summary>
+              <div class="faq__body">
+                Most experiences show instant confirmation. If a tour needs manual confirmation, you’ll see it clearly and our team follows up quickly.
+              </div>
+            </details>
+            <details class="faq">
+              <summary>Can I cancel or change my booking?</summary>
+              <div class="faq__body">
+                Many tours offer free cancellation within a set window. Always check the cancellation policy on the tour page before booking.
+              </div>
+            </details>
+            <details class="faq">
+              <summary>Need help choosing?</summary>
+              <div class="faq__body">
+                Open any tour and tap “Ask on WhatsApp” to confirm pickup, timing, accessibility, and what’s included.
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="footer" id="contact">
       <div class="container">
         <div class="footer__grid">
           <div>
-            <h3>FTS Travels v2</h3>
-            <p>Premium Egypt experiences with a modern booking flow. Replace this text with your real brand story.</p>
+            <h3>FTS Travels</h3>
+            <p>
+              A premium Egypt tours marketplace built around clear itineraries, trusted local partners, and a booking flow designed for confidence.
+            </p>
           </div>
           <div>
             <h3>Explore</h3>
@@ -245,14 +285,14 @@
           </div>
           <div>
             <h3>Support</h3>
-            <a href="#">Help center (placeholder)</a>
-            <a href="#">Cancellation policy (placeholder)</a>
-            <a href="#">Contact (placeholder)</a>
+            <a href="index.html#support">Booking help</a>
+            <a href="index.html#support">Cancellation policy</a>
+            <a href="index.html#contact">Contact</a>
           </div>
           <div>
             <h3>Contact</h3>
-            <p>WhatsApp: +20 XXX XXX XXXX</p>
-            <p>Email: hello@ftstravels.example</p>
+            <p>WhatsApp support: available from any tour page</p>
+            <p>Email: support@ftstravels.com</p>
           </div>
         </div>
         <div class="footer__bottom">
@@ -284,11 +324,21 @@
         host.innerHTML = "";
         const tours = await getTours();
         const popularDestinations = await getPopularDestinations();
+        const icons = {
+          Cairo: "assets/images/cairo.svg",
+          Luxor: "assets/images/luxor.svg",
+          Aswan: "assets/images/aswan.svg",
+          Hurghada: "assets/images/hurghada.svg",
+          "Sharm El Sheikh": "assets/images/sharm.svg",
+        };
         popularDestinations.forEach((d) => {
           const count = tours.filter((t) => t.location === d).length;
           const el = document.createElement("div");
           el.className = "destination";
-          el.innerHTML = `<a href="tours.html?location=${encodeURIComponent(d)}"><div class="destination__name">${d}</div><p class="destination__meta">${count} experiences</p></a>`;
+          const icon = icons[d] || "assets/images/nile.svg";
+          el.innerHTML = `<a href="tours.html?location=${encodeURIComponent(
+            d
+          )}"><img class="destination__icon" src="${icon}" alt="" aria-hidden="true" /><div class="destination__name">${d}</div><p class="destination__meta">${count} experiences</p></a>`;
           host.appendChild(el);
         });
       }

@@ -179,7 +179,13 @@ async function init() {
     const sorted = sortTours(filtered, state.sort);
 
     count.textContent = `${sorted.length} tour${sorted.length === 1 ? "" : "s"}`;
-    mountTourGrid(grid, sorted);
+    mountTourGrid(grid, sorted, {
+      onReset: () => {
+        form.reset();
+        setAllSorts("recommended");
+        apply();
+      },
+    });
     renderTopPick(topPick, sorted[0] || null);
 
     renderActiveChips(state, active, {
@@ -241,4 +247,3 @@ async function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
-

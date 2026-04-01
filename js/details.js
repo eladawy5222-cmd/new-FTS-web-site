@@ -1,5 +1,6 @@
 import { getRelatedTours, getTourBySlug } from "./toursRepository.js";
 import { getDecisionCues } from "./decision.js";
+import { getWhatsAppE164 } from "./config.js";
 import { buildBookingUrl, createBadge, createTourCard, formatPrice, initHeader, qs, qsa, renderStars } from "./ui.js";
 
 function buildWhatsAppLink({ phoneE164Digits, text }) {
@@ -30,8 +31,7 @@ function mountItinerary(host, items) {
     title.appendChild(num);
     title.appendChild(label);
     const desc = document.createElement("div");
-    desc.className = "muted";
-    desc.style.marginTop = "6px";
+    desc.className = "timeline__desc";
     desc.textContent = s.description || "";
     card.appendChild(title);
     card.appendChild(desc);
@@ -73,7 +73,7 @@ async function init() {
     return;
   }
 
-  document.title = `${tour.title} — FTS Travels v2`;
+  document.title = `${tour.title} — FTS Travels`;
 
   const breadcrumbTitle = qs("[data-breadcrumb-title]");
   if (breadcrumbTitle) breadcrumbTitle.textContent = tour.title;
@@ -85,12 +85,25 @@ async function init() {
 
   const ratingHost = qs("[data-rating]");
   ratingHost.innerHTML = "";
-  ratingHost.appendChild(renderStars(tour.rating));
-  const r = document.createElement("span");
-  r.style.fontWeight = "800";
-  r.style.marginLeft = "8px";
-  r.textContent = `${(Number(tour.rating) || 0).toFixed(1)} (${Number(tour.reviewsCount) || 0})`;
-  ratingHost.appendChild(r);
+  const ratingWrap = document.createElement("div");
+  ratingWrap.className = "rating-inline";
+  ratingWrap.appendChild(renderStars(tour.rating));
+  const score = document.createElement("span");
+  score.className = "rating-inline__score";
+  score.textContent = (Number(tour.rating) || 0).toFixed(1);
+  const count = document.createElement("span");
+  count.className = "rating-inline__count";
+  count.textContent = `${Number(tour.reviewsCount) || 0} reviews`;
+  ratingWrap.appendChild(score);
+  ratingWrap.appendChild(count);
+  ratingHost.appendChild(ratingWrap);
+
+  const reviewSummary = qs("[data-review-summary]");
+  if (reviewSummary) {
+    reviewSummary.textContent = `Rated ${(Number(tour.rating) || 0).toFixed(1)}/5 from ${
+      Number(tour.reviewsCount) || 0
+    } traveler reviews. Expect clear timing, knowledgeable guides, and well-planned stops.`;
+  }
 
   const badges = qs("[data-badges]");
   badges.innerHTML = "";
@@ -160,7 +173,7 @@ async function init() {
     ]
       .filter(Boolean)
       .join("\n");
-    whatsapp.href = buildWhatsAppLink({ phoneE164Digits: "201000000000", text: msg });
+    whatsapp.href = buildWhatsAppLink({ phoneE164Digits: getWhatsAppE164(), text: msg });
   };
 
   qsa("input", box).forEach((el) => el.addEventListener("input", syncWhatsApp));
@@ -175,7 +188,7 @@ async function init() {
 
   const relatedHost = qs("[data-related]");
   relatedHost.innerHTML = "";
-  (await getRelatedTours(tour.slug, 4)).forEach((t) => relatedHost.appendChild(createTourCard(t, { compact: true })));
+  (await getRelatedTours(tour.slug, 6)).forEach((t) => relatedHost.appendChild(createTourCard(t, { compact: true })));
 
   const reviewsHost = qs("[data-reviews]");
   reviewsHost.innerHTML = "";

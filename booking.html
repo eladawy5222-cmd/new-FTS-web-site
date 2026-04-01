@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Booking — FTS Travels v2</title>
+    <title>Booking — FTS Travels</title>
     <meta name="description" content="Choose your date, travelers, and complete booking details for your Egypt experience." />
     <link rel="stylesheet" href="css/styles.css" />
   </head>
@@ -15,8 +15,8 @@
         <a class="brand" href="index.html" aria-label="FTS Travels home">
           <div class="logo" aria-hidden="true"></div>
           <div class="brand__name">
-            <strong>FTS Travels v2</strong>
-            <span>Egypt-based experiences</span>
+            <strong>FTS Travels</strong>
+            <span>Premium Egypt experiences</span>
           </div>
         </a>
 
@@ -48,12 +48,19 @@
           <span>Booking</span>
         </nav>
 
+        <div class="checkout-steps" aria-label="Checkout steps">
+          <div class="checkout-step is-active">1. Details</div>
+          <div class="checkout-step">2. Confirm</div>
+          <div class="checkout-step">3. Ready to go</div>
+        </div>
+
         <h1 class="page__title">Complete your booking</h1>
-        <p class="muted page__lead">Mock checkout UI. Replace submission with real payments later.</p>
+        <p class="muted page__lead">Reserve your spot in minutes. Review details, then confirm with our team if needed.</p>
         <div class="trust-inline mt-16">
           <span class="pill">Instant confirmation</span>
           <span class="pill">Free cancellation options</span>
           <span class="pill">WhatsApp support</span>
+          <span class="pill">Clear inclusions</span>
         </div>
 
         <div class="booking-grid mt-16">
@@ -94,9 +101,13 @@
                   <textarea id="notes" name="notes" rows="4" placeholder="Pickup notes, accessibility needs, dietary preferences…"></textarea>
                 </div>
 
+                <div class="note note--ok">
+                  No hidden fees. Your request is saved instantly, and we’ll confirm availability and pickup details via email or WhatsApp.
+                </div>
+
                 <label class="note terms">
                   <input type="checkbox" name="terms" required />
-                  <span>I understand this is a mock booking flow. Payment and confirmation will be connected later.</span>
+                  <span>I agree to the cancellation policy and the booking terms for this experience.</span>
                 </label>
 
                 <div class="stack stack--sm">
@@ -148,7 +159,7 @@
       <div class="container">
         <div class="footer__bottom">
           <span>© <span data-year></span> FTS Travels.</span>
-          <span class="muted">Next step: connect to Airtable/API & payments.</span>
+          <span class="muted">Built for standard hosting with plain HTML/CSS/JS.</span>
         </div>
       </div>
     </footer>

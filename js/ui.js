@@ -108,9 +108,7 @@ export function createTourCard(tour, { compact = false } = {}) {
 
   const pricePill = document.createElement("div");
   pricePill.className = "tour-card__pricepill";
-  pricePill.innerHTML = `<span class="tour-card__from">From</span><span class="tour-card__amount">${escapeHtml(
-    formatPrice(tour.price)
-  )}</span>`;
+  pricePill.innerHTML = `<span class="tour-card__from">From</span><span class="tour-card__amount">${escapeHtml(formatPrice(tour.price))}</span>`;
   if (tour.oldPrice && tour.oldPrice > tour.price) {
     const old = document.createElement("span");
     old.className = "tour-card__old";
@@ -123,7 +121,35 @@ export function createTourCard(tour, { compact = false } = {}) {
 
   const meta = document.createElement("div");
   meta.className = "tour-card__meta";
-  meta.textContent = `${tour.location} • ${tour.duration?.label || ""} • ${tour.type || ""}`.replace(/\s+•\s+$/, "");
+  meta.textContent = `${tour.location} • ${tour.category}`.replace(/\s+•\s+$/, "");
+
+  const facts = document.createElement("div");
+  facts.className = "tour-card__facts";
+
+  const ratingPill = document.createElement("div");
+  ratingPill.className = "rating-pill";
+  const ratingStar = document.createElement("span");
+  ratingStar.className = "rating-pill__star";
+  ratingStar.textContent = "★";
+  const ratingValue = document.createElement("span");
+  ratingValue.className = "rating-pill__value";
+  ratingValue.textContent = (Number(tour.rating) || 0).toFixed(1);
+  const ratingCount = document.createElement("span");
+  ratingCount.className = "rating-pill__count";
+  ratingCount.textContent = `${Number(tour.reviewsCount) || 0} reviews`;
+  ratingPill.appendChild(ratingStar);
+  ratingPill.appendChild(ratingValue);
+  ratingPill.appendChild(ratingCount);
+  facts.appendChild(ratingPill);
+
+  const addFact = (text) => {
+    const p = document.createElement("span");
+    p.className = "info-pill";
+    p.textContent = text;
+    facts.appendChild(p);
+  };
+  if (tour.duration?.label) addFact(tour.duration.label);
+  if (tour.type) addFact(tour.type);
 
   const ratingRow = document.createElement("div");
   ratingRow.className = "tour-card__rating";
@@ -143,7 +169,9 @@ export function createTourCard(tour, { compact = false } = {}) {
 
   const proof = document.createElement("div");
   proof.className = `tour-card__proof tour-card__proof--${cues.urgencyLevel}`;
-  proof.textContent = `${cues.urgencyLabel} • ${cues.proofLine} • ${cues.viewingNow} viewing now`;
+  proof.textContent = `${cues.urgencyLabel} • ${cues.proofLine}${
+    cues.urgencyLevel === "high" ? ` • ${cues.viewingNow} viewing now` : ""
+  }`;
 
   const desc = document.createElement("p");
   desc.className = "tour-card__desc";
@@ -151,7 +179,8 @@ export function createTourCard(tour, { compact = false } = {}) {
 
   body.appendChild(top);
   body.appendChild(meta);
-  body.appendChild(ratingRow);
+  body.appendChild(facts);
+  if (compact) body.appendChild(ratingRow);
   body.appendChild(proof);
   if (!compact) body.appendChild(desc);
 
@@ -165,12 +194,12 @@ export function createTourCard(tour, { compact = false } = {}) {
   const btn = document.createElement("a");
   btn.className = "btn btn--primary btn--block";
   btn.href = buildBookingUrl(tour);
-  btn.textContent = "Book now";
+  btn.textContent = "Reserve";
 
   const details = document.createElement("a");
   details.className = "btn btn--ghost btn--block";
   details.href = buildTourUrl(tour);
-  details.textContent = "View details";
+  details.textContent = "Details";
 
   actions.appendChild(btn);
   actions.appendChild(details);
@@ -179,14 +208,28 @@ export function createTourCard(tour, { compact = false } = {}) {
   return card;
 }
 
-export function mountTourGrid(container, items, { emptyMessage = "No tours match your filters." } = {}) {
+export function mountTourGrid(container, items, { emptyMessage = "No tours match your filters.", onReset } = {}) {
   container.innerHTML = "";
   if (!items.length) {
     const empty = document.createElement("div");
     empty.className = "empty";
-    empty.innerHTML = `<div class="empty__title">No results</div><div class="empty__text">${escapeHtml(
-      emptyMessage
-    )}</div>`;
+    empty.innerHTML = `<div class="empty__title">No results</div><div class="empty__text">${escapeHtml(emptyMessage)}</div>`;
+    if (typeof onReset === "function") {
+      const actions = document.createElement("div");
+      actions.className = "empty__actions";
+      const reset = document.createElement("button");
+      reset.type = "button";
+      reset.className = "btn btn--primary";
+      reset.textContent = "Reset filters";
+      reset.addEventListener("click", onReset);
+      const browse = document.createElement("a");
+      browse.className = "btn btn--ghost";
+      browse.href = "tours.html";
+      browse.textContent = "Browse all";
+      actions.appendChild(reset);
+      actions.appendChild(browse);
+      empty.appendChild(actions);
+    }
     container.appendChild(empty);
     return;
   }

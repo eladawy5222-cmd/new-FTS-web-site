@@ -1,4 +1,5 @@
 import { getTourBySlug } from "./toursRepository.js";
+import { getWhatsAppE164 } from "./config.js";
 import { formatPrice, initHeader, qs, renderStars } from "./ui.js";
 
 function safeNumber(v, fallback) {
@@ -25,7 +26,7 @@ async function init() {
     return;
   }
 
-  document.title = `Booking — ${tour.title} — FTS Travels v2`;
+  document.title = `Booking — ${tour.title} — FTS Travels`;
 
   const back = qs("[data-back-to-tour]");
   back.href = `tour-details.html?slug=${encodeURIComponent(tour.slug)}`;
@@ -36,12 +37,18 @@ async function init() {
 
   const ratingHost = qs("[data-tour-rating]");
   ratingHost.innerHTML = "";
-  ratingHost.appendChild(renderStars(tour.rating));
-  const ratingText = document.createElement("span");
-  ratingText.className = "muted";
-  ratingText.style.marginLeft = "8px";
-  ratingText.textContent = `${(Number(tour.rating) || 0).toFixed(1)} (${Number(tour.reviewsCount) || 0})`;
-  ratingHost.appendChild(ratingText);
+  const ratingWrap = document.createElement("div");
+  ratingWrap.className = "rating-inline";
+  ratingWrap.appendChild(renderStars(tour.rating));
+  const score = document.createElement("span");
+  score.className = "rating-inline__score";
+  score.textContent = (Number(tour.rating) || 0).toFixed(1);
+  const count = document.createElement("span");
+  count.className = "rating-inline__count";
+  count.textContent = `${Number(tour.reviewsCount) || 0} reviews`;
+  ratingWrap.appendChild(score);
+  ratingWrap.appendChild(count);
+  ratingHost.appendChild(ratingWrap);
 
   qs("[data-price-each]").textContent = formatPrice(tour.price);
   qs("[data-cancellation]").textContent = tour.cancellation || "Cancellation policy will be shown here.";
@@ -75,7 +82,7 @@ async function init() {
       .filter(Boolean)
       .join("\n");
 
-    whatsapp.href = buildWhatsAppLink({ phoneE164Digits: "201000000000", text: msg });
+    whatsapp.href = buildWhatsAppLink({ phoneE164Digits: getWhatsAppE164(), text: msg });
 
     const url = new URL(window.location.href);
     url.searchParams.set("slug", tour.slug);
@@ -97,9 +104,10 @@ async function init() {
     const date = dateEl.value || "";
     const travelers = Math.max(1, Math.round(safeNumber(travelersEl.value, 1)));
     success?.classList?.remove("is-hidden");
-    if (success) success.textContent = `Thanks${name ? `, ${name}` : ""}! Your reservation for ${travelers} traveler${
-      travelers === 1 ? "" : "s"
-    }${date ? ` on ${date}` : ""} has been prepared. Use the WhatsApp button to confirm details with our team.`;
+    if (success)
+      success.textContent = `Thanks${name ? `, ${name}` : ""}! Your booking request for ${travelers} traveler${
+        travelers === 1 ? "" : "s"
+      }${date ? ` on ${date}` : ""} is saved. We’ll confirm availability and pickup details by email or WhatsApp.`;
     success?.scrollIntoView?.({ behavior: "smooth", block: "start" });
   });
 }
