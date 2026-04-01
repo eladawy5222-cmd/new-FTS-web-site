@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FTS Travels v2 — Premium Egypt Tours & Experiences</title>
+    <meta
+      name="description"
+      content="Discover premium Egypt tours with fast booking, trusted local experts, and flexible cancellation. Cairo, Luxor, Aswan, Hurghada, and Sharm El Sheikh."
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header">
+      <div class="container header__bar" data-nav data-open="false">
+        <a class="brand" href="index.html" aria-label="FTS Travels home">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="brand__name">
+            <strong>FTS Travels v2</strong>
+            <span>Egypt-based experiences</span>
+          </div>
+        </a>
+
+        <form class="header-search" data-header-search role="search" aria-label="Search tours">
+          <input type="search" name="q" placeholder="Search tours, cities, categories…" autocomplete="off" />
+          <button type="submit">Search</button>
+        </form>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <button class="nav__toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-links">
+            Menu
+          </button>
+          <div class="nav__links" id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="tours.html">Tours</a>
+            <a href="#testimonials">Reviews</a>
+            <a class="btn btn--primary" href="tours.html">Explore tours</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="container hero__grid">
+          <div>
+            <div class="hero__kicker">
+              <span class="pill">Free cancellation</span>
+              <span class="pill">Instant confirmation</span>
+              <span class="pill">Trusted local experts</span>
+            </div>
+            <h1>Book unforgettable Egypt experiences — fast, safe, and beautifully planned.</h1>
+            <p>
+              A premium marketplace for tours across Cairo, Luxor, Aswan, Hurghada, and Sharm El Sheikh. Transparent
+              prices, real reviews, and a booking flow designed for confidence.
+            </p>
+            <div class="hero__actions">
+              <a class="btn btn--primary" href="tours.html">Explore tours</a>
+              <a class="btn btn--ghost" href="#why">Why FTS Travels</a>
+              <a class="btn btn--soft" href="#testimonials">See reviews</a>
+            </div>
+            <div class="trust-inline hero__fineprint">
+              <span class="pill" data-avg-rating>Highly rated</span>
+              <span class="pill" data-total-reviews>Verified reviews</span>
+              <span class="pill">Handpicked itineraries</span>
+              <span class="pill">Local support</span>
+            </div>
+          </div>
+
+          <div class="hero-card">
+            <div class="hero-card__top">
+              <p class="hero-card__title">Find your perfect tour</p>
+              <p class="hero-card__sub">Search by destination, activity type, and date.</p>
+            </div>
+            <form class="hero-card__form" data-hero-search>
+              <div class="field">
+                <label for="destination">Destination</label>
+                <select id="destination" name="location" required></select>
+              </div>
+              <div class="field">
+                <label for="category">Activity type</label>
+                <select id="category" name="category">
+                  <option value="">Any</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="date">Date</label>
+                <input id="date" type="date" name="date" />
+              </div>
+              <button class="btn btn--primary" type="submit">Search tours</button>
+              <div class="hero__fineprint">Limited spots available on top-rated experiences this week.</div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section__head">
+            <div>
+              <h2 class="section__title">Popular destinations in Egypt</h2>
+              <p class="section__sub">Start with the cities travelers love most — then refine with filters.</p>
+            </div>
+            <a class="btn btn--ghost" href="tours.html">View all</a>
+          </div>
+          <div class="destinations" data-destinations></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section__head">
+            <div>
+              <h2 class="section__title">Browse by activity</h2>
+              <p class="section__sub">Jump straight to what you want, then fine-tune with filters.</p>
+            </div>
+            <a class="btn btn--ghost" href="tours.html">Browse all</a>
+          </div>
+          <div class="trust-inline" data-category-links></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section__head">
+            <div>
+              <h2 class="section__title">Featured tours</h2>
+              <p class="section__sub">Handpicked best sellers and premium experiences with great reviews.</p>
+            </div>
+            <a class="btn btn--ghost" href="tours.html">Browse all tours</a>
+          </div>
+          <div class="grid grid--cards" data-featured-grid></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section__head">
+            <div>
+              <h2 class="section__title">Book in minutes</h2>
+              <p class="section__sub">A booking flow designed to help you decide confidently and fast.</p>
+            </div>
+          </div>
+          <div class="steps">
+            <div class="panel step">
+              <div class="panel__body">
+                <strong>1) Compare tours quickly</strong>
+                <p>Scan ratings, cancellation, and pricing at a glance—no hidden surprises.</p>
+              </div>
+            </div>
+            <div class="panel step">
+              <div class="panel__body">
+                <strong>2) Pick your date & group type</strong>
+                <p>Private or group, short or full day—choose what matches your schedule.</p>
+              </div>
+            </div>
+            <div class="panel step">
+              <div class="panel__body">
+                <strong>3) Reserve your spot</strong>
+                <p>Instant confirmation on most experiences, plus WhatsApp support if needed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="why">
+        <div class="container">
+          <div class="section__head">
+            <div>
+              <h2 class="section__title">Why choose FTS Travels</h2>
+              <p class="section__sub">Conversion-focused trust signals — so you book with peace of mind.</p>
+            </div>
+          </div>
+          <div class="trust">
+            <div class="trust-card">
+              <strong>Local experts, global-quality UX</strong>
+              <p>Egypt-based guidance with clear descriptions, transparent pricing, and smooth booking.</p>
+            </div>
+            <div class="trust-card">
+              <strong>Free cancellation</strong>
+              <p>Most tours offer free cancellation so you can plan flexibly and book early.</p>
+            </div>
+            <div class="trust-card">
+              <strong>Instant confirmation</strong>
+              <p>See availability and confirm fast — no waiting for manual replies to secure your spot.</p>
+            </div>
+            <div class="trust-card">
+              <strong>Support when you need it</strong>
+              <p>Quick WhatsApp contact for last-minute questions, meeting points, or custom needs.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="testimonials">
+        <div class="container">
+          <div class="section__head">
+            <div>
+              <h2 class="section__title">What travelers say</h2>
+              <p class="section__sub">Mock testimonials (replace with real reviews later).</p>
+            </div>
+          </div>
+          <div class="testimonials">
+            <div class="panel testimonial">
+              <div class="panel__body">
+                <div class="testimonial__quote">“Super smooth booking and an amazing guide.”</div>
+                <div class="testimonial__text">We visited Giza early, avoided the crowds, and loved the storytelling.</div>
+                <div class="testimonial__meta">— Sarah, UK</div>
+              </div>
+            </div>
+            <div class="panel testimonial">
+              <div class="panel__body">
+                <div class="testimonial__quote">“Best value tour in Luxor.”</div>
+                <div class="testimonial__text">Clear itinerary, punctual pickup, and the guide helped us choose the best tombs.</div>
+                <div class="testimonial__meta">— Ahmed, UAE</div>
+              </div>
+            </div>
+            <div class="panel testimonial">
+              <div class="panel__body">
+                <div class="testimonial__quote">“Great support on WhatsApp.”</div>
+                <div class="testimonial__text">We changed the meeting point and everything was handled quickly.</div>
+                <div class="testimonial__meta">— Lina, Germany</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" id="contact">
+      <div class="container">
+        <div class="footer__grid">
+          <div>
+            <h3>FTS Travels v2</h3>
+            <p>Premium Egypt experiences with a modern booking flow. Replace this text with your real brand story.</p>
+          </div>
+          <div>
+            <h3>Explore</h3>
+            <a href="tours.html">All tours</a>
+            <a href="tours.html?category=Historical">Historical tours</a>
+            <a href="tours.html?category=Sea%20%26%20Snorkeling">Sea & snorkeling</a>
+          </div>
+          <div>
+            <h3>Support</h3>
+            <a href="#">Help center (placeholder)</a>
+            <a href="#">Cancellation policy (placeholder)</a>
+            <a href="#">Contact (placeholder)</a>
+          </div>
+          <div>
+            <h3>Contact</h3>
+            <p>WhatsApp: +20 XXX XXX XXXX</p>
+            <p>Email: hello@ftstravels.example</p>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span>© <span data-year></span> FTS Travels. All rights reserved.</span>
+          <span class="muted">Built for standard hosting (cPanel/FTP). No framework required.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { createTourCard, initHeader, qs } from "./js/ui.js";
+      import { getCategories, getPopularDestinations, getTours } from "./js/toursRepository.js";
+
+      async function mountStats() {
+        const tours = await getTours();
+        const totalReviews = tours.reduce((sum, t) => sum + (Number(t.reviewsCount) || 0), 0);
+        const avgRating =
+          tours.reduce((sum, t) => sum + (Number(t.rating) || 0) * (Number(t.reviewsCount) || 0), 0) / Math.max(1, totalReviews);
+
+        const avgEl = qs("[data-avg-rating]");
+        const revEl = qs("[data-total-reviews]");
+        if (avgEl) avgEl.textContent = `${avgRating.toFixed(1)} average rating`;
+        if (revEl) revEl.textContent = `${totalReviews.toLocaleString()}+ verified reviews`;
+      }
+
+      async function mountDestinations() {
+        const host = qs("[data-destinations]");
+        if (!host) return;
+        host.innerHTML = "";
+        const tours = await getTours();
+        const popularDestinations = await getPopularDestinations();
+        popularDestinations.forEach((d) => {
+          const count = tours.filter((t) => t.location === d).length;
+          const el = document.createElement("div");
+          el.className = "destination";
+          el.innerHTML = `<a href="tours.html?location=${encodeURIComponent(d)}"><div class="destination__name">${d}</div><p class="destination__meta">${count} experiences</p></a>`;
+          host.appendChild(el);
+        });
+      }
+
+      async function mountCategoryLinks() {
+        const host = qs("[data-category-links]");
+        if (!host) return;
+        host.innerHTML = "";
+        const categories = await getCategories();
+        categories.slice(0, 8).forEach((c) => {
+          const a = document.createElement("a");
+          a.className = "pill-link";
+          a.href = `tours.html?category=${encodeURIComponent(c)}`;
+          a.textContent = c;
+          host.appendChild(a);
+        });
+      }
+
+      async function mountFeatured() {
+        const host = qs("[data-featured-grid]");
+        if (!host) return;
+        host.innerHTML = "";
+        const tours = await getTours();
+        tours
+          .filter((t) => t.featured)
+          .slice(0, 6)
+          .forEach((t) => host.appendChild(createTourCard(t)));
+      }
+
+      async function initHeroForm() {
+        const form = qs("[data-hero-search]");
+        if (!form) return;
+
+        const loc = qs("select[name='location']", form);
+        const cat = qs("select[name='category']", form);
+
+        loc.innerHTML = `<option value="" disabled selected>Select a destination</option>`;
+        const popularDestinations = await getPopularDestinations();
+        popularDestinations.forEach((d) => {
+          const o = document.createElement("option");
+          o.value = d;
+          o.textContent = d;
+          loc.appendChild(o);
+        });
+
+        const categories = await getCategories();
+        categories.forEach((c) => {
+          const o = document.createElement("option");
+          o.value = c;
+          o.textContent = c;
+          cat.appendChild(o);
+        });
+
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const url = new URL("tours.html", window.location.href);
+          const location = loc.value;
+          const category = cat.value;
+          const date = qs("input[name='date']", form)?.value || "";
+          if (location) url.searchParams.set("location", location);
+          if (category) url.searchParams.set("category", category);
+          if (date) url.searchParams.set("date", date);
+          window.location.href = url.toString();
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initHeader();
+        mountStats();
+        mountDestinations();
+        mountCategoryLinks();
+        mountFeatured();
+        initHeroForm();
+      });
+    </script>
+  </body>
+</html>
+

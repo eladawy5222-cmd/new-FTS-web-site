@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="875" viewBox="0 0 1400 875">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4ea7ff"/>
+      <stop offset="1" stop-color="#56e0c4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="875" fill="#0b1220"/>
+  <rect x="70" y="70" width="1260" height="735" rx="44" fill="url(#g)" opacity=".16"/>
+  <path d="M0 610 C220 540, 420 700, 620 610 C840 520, 1040 720, 1400 600 L1400 875 L0 875 Z" fill="rgba(255,255,255,.12)"/>
+  <circle cx="420" cy="600" r="36" fill="rgba(255,255,255,.10)"/>
+  <circle cx="520" cy="640" r="28" fill="rgba(255,255,255,.12)"/>
+  <circle cx="640" cy="590" r="22" fill="rgba(255,255,255,.08)"/>
+  <text x="100" y="168" fill="rgba(233,238,249,.92)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="66" font-weight="800">Reefs</text>
+  <text x="100" y="228" fill="rgba(233,238,249,.72)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="28" font-weight="600">Snorkel-ready water • Marine life</text>
+</svg>
+

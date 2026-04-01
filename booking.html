@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Booking — FTS Travels v2</title>
+    <meta name="description" content="Choose your date, travelers, and complete booking details for your Egypt experience." />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header">
+      <div class="container header__bar" data-nav data-open="false">
+        <a class="brand" href="index.html" aria-label="FTS Travels home">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="brand__name">
+            <strong>FTS Travels v2</strong>
+            <span>Egypt-based experiences</span>
+          </div>
+        </a>
+
+        <form class="header-search" data-header-search role="search" aria-label="Search tours">
+          <input type="search" name="q" placeholder="Search tours, cities, categories…" autocomplete="off" />
+          <button type="submit">Search</button>
+        </form>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <button class="nav__toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-links">
+            Menu
+          </button>
+          <div class="nav__links" id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="tours.html">Tours</a>
+            <a class="btn btn--primary" href="tours.html">Explore tours</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page" id="main">
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="tours.html">Tours</a>
+          <span aria-hidden="true">›</span>
+          <a data-back-to-tour href="tour-details.html">Tour</a>
+          <span aria-hidden="true">›</span>
+          <span>Booking</span>
+        </nav>
+
+        <h1 class="page__title">Complete your booking</h1>
+        <p class="muted page__lead">Mock checkout UI. Replace submission with real payments later.</p>
+        <div class="trust-inline mt-16">
+          <span class="pill">Instant confirmation</span>
+          <span class="pill">Free cancellation options</span>
+          <span class="pill">WhatsApp support</span>
+        </div>
+
+        <div class="booking-grid mt-16">
+          <section class="card">
+            <div class="card__body">
+              <div class="note note--ok is-hidden" data-success></div>
+
+              <form data-booking-form class="stack">
+                <div class="split">
+                  <div class="field">
+                    <label for="date">Date</label>
+                    <input id="date" type="date" name="date" required />
+                  </div>
+                  <div class="field">
+                    <label for="travelers">Travelers</label>
+                    <input id="travelers" type="number" name="travelers" min="1" value="2" required />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="fullName">Full name</label>
+                  <input id="fullName" name="fullName" autocomplete="name" required placeholder="Your name" />
+                </div>
+
+                <div class="split">
+                  <div class="field">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+                  </div>
+                  <div class="field">
+                    <label for="phone">Phone / WhatsApp</label>
+                    <input id="phone" name="phone" autocomplete="tel" required placeholder="+20…" />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="notes">Special requests (optional)</label>
+                  <textarea id="notes" name="notes" rows="4" placeholder="Pickup notes, accessibility needs, dietary preferences…"></textarea>
+                </div>
+
+                <label class="note terms">
+                  <input type="checkbox" name="terms" required />
+                  <span>I understand this is a mock booking flow. Payment and confirmation will be connected later.</span>
+                </label>
+
+                <div class="stack stack--sm">
+                  <button class="btn btn--primary btn--block" type="submit">Reserve my spot</button>
+                  <a class="btn btn--ghost btn--block whatsapp" data-whatsapp target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
+                </div>
+              </form>
+            </div>
+          </section>
+
+
+          <aside class="card sticky">
+            <div class="card__body summary">
+              <strong data-tour-title>Tour</strong>
+              <div class="muted" data-tour-meta></div>
+
+              <div class="mt-16" data-tour-rating></div>
+
+              <div class="divider" aria-hidden="true"></div>
+
+              <div class="summary-row">
+                <span class="muted">Price per person</span>
+                <span data-price-each>$0</span>
+              </div>
+              <div class="summary-row">
+                <span class="muted">Travelers</span>
+                <span data-travelers>0</span>
+              </div>
+              <div class="summary-row">
+                <span class="muted">Selected date</span>
+                <span data-date>—</span>
+              </div>
+
+              <div class="divider" aria-hidden="true"></div>
+
+              <div class="summary-row">
+                <span>Total</span>
+                <strong data-total>$0</strong>
+              </div>
+
+              <div class="note note--ok mt-16" data-cancellation></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__bottom">
+          <span>© <span data-year></span> FTS Travels.</span>
+          <span class="muted">Next step: connect to Airtable/API & payments.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="js/booking.js"></script>
+  </body>
+</html>
+

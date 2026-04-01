@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tours — FTS Travels v2</title>
+    <meta name="description" content="Browse Egypt tours with filters for destination, price, duration, category, type, and ratings." />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header">
+      <div class="container header__bar" data-nav data-open="false">
+        <a class="brand" href="index.html" aria-label="FTS Travels home">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="brand__name">
+            <strong>FTS Travels v2</strong>
+            <span>Egypt-based experiences</span>
+          </div>
+        </a>
+
+        <form class="header-search" data-header-search role="search" aria-label="Search tours">
+          <input type="search" name="q" placeholder="Search tours, cities, categories…" autocomplete="off" />
+          <button type="submit">Search</button>
+        </form>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <button class="nav__toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-links">
+            Menu
+          </button>
+          <div class="nav__links" id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="tours.html">Tours</a>
+            <a class="btn btn--primary" href="tours.html">Explore tours</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page" id="main">
+      <div class="container">
+        <h1 class="page__title">Tours in Egypt</h1>
+        <p class="muted page__lead">Compare top experiences. Filter fast. Book with confidence.</p>
+
+        <div class="trust-inline">
+          <span class="pill">Free cancellation options</span>
+          <span class="pill">Instant confirmation</span>
+          <span class="pill">Trusted local experts</span>
+          <span class="pill">Limited spots on top-rated dates</span>
+        </div>
+
+        <div class="filters-bar" aria-label="Mobile actions">
+          <div class="filters-bar__left">
+            <button class="btn btn--ghost" type="button" data-open-filters>Filters</button>
+          </div>
+          <div class="field sort field--inline">
+            <label class="sr-only" for="sortMobile">Sort</label>
+            <select id="sortMobile" data-sort>
+              <option value="recommended">Recommended</option>
+              <option value="topRated">Top rated</option>
+              <option value="priceLow">Price: low to high</option>
+              <option value="newest">Newest</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar__left">
+            <div class="results-count">
+              <strong data-results-count>0 tours</strong>
+              <span class="muted">matched</span>
+            </div>
+            <div class="active-filters" data-active-filters></div>
+          </div>
+          <div class="toolbar__right">
+            <div class="field sort field--inline">
+              <label class="sr-only" for="sort">Sort</label>
+              <select id="sort" data-sort>
+                <option value="recommended">Recommended</option>
+                <option value="topRated">Top rated</option>
+                <option value="priceLow">Price: low to high</option>
+                <option value="newest">Newest</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="note is-hidden" data-top-pick></div>
+
+        <div class="layout">
+          <aside class="panel" data-filters-panel>
+            <div class="panel__head">
+              <h2>Filters</h2>
+              <button class="btn btn--ghost" type="button" data-clear-filters>Reset</button>
+            </div>
+            <div class="panel__body" data-filters-panel-body>
+              <form class="filters" data-filters-form>
+                <div class="field">
+                  <label for="q">Search</label>
+                  <input id="q" name="q" type="search" placeholder="e.g. pyramids, snorkeling, Luxor…" autocomplete="off" />
+                </div>
+
+                <div class="field">
+                  <label for="location">Location</label>
+                  <select id="location" name="location"></select>
+                </div>
+
+                <div class="field">
+                  <label for="category">Category</label>
+                  <select id="category" name="category"></select>
+                </div>
+
+                <div class="field">
+                  <label for="type">Private / Group</label>
+                  <select id="type" name="type"></select>
+                </div>
+
+                <div class="field">
+                  <label for="ratingMin">Minimum rating</label>
+                  <select id="ratingMin" name="ratingMin">
+                    <option value="0">Any</option>
+                    <option value="4.9">4.9+</option>
+                    <option value="4.8">4.8+</option>
+                    <option value="4.6">4.6+</option>
+                    <option value="4.4">4.4+</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="duration">Duration</label>
+                  <select id="duration" name="duration">
+                    <option value="">Any</option>
+                    <option value="lt3">&lt; 3 hours</option>
+                    <option value="3to6">3–6 hours</option>
+                    <option value="6to10">6–10 hours</option>
+                    <option value="10plus">10+ hours</option>
+                    <option value="multiday">Multi-day</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label>Price range (USD)</label>
+                  <div class="row">
+                    <div class="field field--inline">
+                      <label class="sr-only" for="priceMin">Min</label>
+                      <input id="priceMin" name="priceMin" type="number" inputmode="numeric" placeholder="Min" min="0" />
+                    </div>
+                    <div class="field field--inline">
+                      <label class="sr-only" for="priceMax">Max</label>
+                      <input id="priceMax" name="priceMax" type="number" inputmode="numeric" placeholder="Max" min="0" />
+                    </div>
+                  </div>
+                  <div class="hint">Tip: Try <span data-price-min-hint>0</span>–<span data-price-max-hint>0</span> for this dataset.</div>
+                </div>
+              </form>
+            </div>
+          </aside>
+
+          <section>
+            <div class="grid grid--cards" data-tours-grid></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <div class="drawer" data-filters-drawer data-open="false" aria-hidden="true">
+      <div class="drawer__overlay" data-close-filters></div>
+      <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Filters">
+        <div class="panel__head">
+          <h2>Filters</h2>
+          <button class="btn btn--ghost" type="button" data-close-filters>Close</button>
+        </div>
+        <div class="panel__body" data-filters-drawer-body></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__grid">
+          <div>
+            <h3>FTS Travels v2</h3>
+            <p>Premium Egypt experiences with a hosting-friendly static build.</p>
+          </div>
+          <div>
+            <h3>Explore</h3>
+            <a href="tours.html">All tours</a>
+            <a href="tours.html?location=Cairo">Cairo</a>
+            <a href="tours.html?location=Luxor">Luxor</a>
+          </div>
+          <div>
+            <h3>Support</h3>
+            <a href="#">Help center (placeholder)</a>
+            <a href="#">Contact (placeholder)</a>
+          </div>
+          <div>
+            <h3>Contact</h3>
+            <p>WhatsApp: +20 XXX XXX XXXX</p>
+            <p>Email: hello@ftstravels.example</p>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span>© <span data-year></span> FTS Travels.</span>
+          <span class="muted">Built for cPanel/FTP deployment.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="js/tours.js"></script>
+  </body>
+</html>
+

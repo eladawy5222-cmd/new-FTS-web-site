@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="875" viewBox="0 0 1400 875">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff5a6a"/>
+      <stop offset="1" stop-color="#ffd166"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="875" fill="#0b1220"/>
+  <rect x="70" y="70" width="1260" height="735" rx="44" fill="url(#g)" opacity=".15"/>
+  <rect x="280" y="420" width="840" height="210" rx="26" fill="rgba(255,255,255,.12)"/>
+  <circle cx="380" cy="525" r="46" fill="rgba(255,255,255,.18)"/>
+  <circle cx="560" cy="525" r="46" fill="rgba(255,255,255,.15)"/>
+  <circle cx="740" cy="525" r="46" fill="rgba(255,255,255,.13)"/>
+  <circle cx="920" cy="525" r="46" fill="rgba(255,255,255,.11)"/>
+  <text x="100" y="168" fill="rgba(233,238,249,.92)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="66" font-weight="800">Bazaar</text>
+  <text x="100" y="228" fill="rgba(233,238,249,.72)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="28" font-weight="600">Khan El Khalili • Food • Crafts</text>
+</svg>
+

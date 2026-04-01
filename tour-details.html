@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tour details — FTS Travels v2</title>
+    <meta name="description" content="View tour details, itinerary, inclusions, and book instantly with FTS Travels v2." />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header">
+      <div class="container header__bar" data-nav data-open="false">
+        <a class="brand" href="index.html" aria-label="FTS Travels home">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="brand__name">
+            <strong>FTS Travels v2</strong>
+            <span>Egypt-based experiences</span>
+          </div>
+        </a>
+
+        <form class="header-search" data-header-search role="search" aria-label="Search tours">
+          <input type="search" name="q" placeholder="Search tours, cities, categories…" autocomplete="off" />
+          <button type="submit">Search</button>
+        </form>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <button class="nav__toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-links">
+            Menu
+          </button>
+          <div class="nav__links" id="nav-links">
+            <a href="index.html">Home</a>
+            <a href="tours.html">Tours</a>
+            <a class="btn btn--primary" href="tours.html">Explore tours</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page" id="main">
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="tours.html">Tours</a>
+          <span aria-hidden="true">›</span>
+          <span data-breadcrumb-title>Tour</span>
+        </nav>
+
+        <div class="two-col">
+          <section>
+            <div class="gallery" data-gallery>
+              <div class="gallery__main">
+                <img data-gallery-main alt="" />
+              </div>
+              <div class="gallery__thumbs" data-gallery-thumbs></div>
+            </div>
+
+            <div class="tour-head">
+              <h1 class="page__title" data-title>Tour</h1>
+              <div class="tour-head__meta">
+                <span data-rating></span>
+                <span class="muted" data-meta></span>
+              </div>
+              <div class="tour-head__badges" data-badges></div>
+            </div>
+
+            <section class="section section--tight">
+              <div class="section__head">
+                <div>
+                  <h2 class="section__title">Highlights</h2>
+                  <p class="section__sub">Designed for clarity, comfort, and great photo moments.</p>
+                </div>
+              </div>
+              <ul class="list" data-highlights></ul>
+            </section>
+
+            <section class="section section--tight">
+              <div class="section__head">
+                <div>
+                  <h2 class="section__title">About this tour</h2>
+                  <p class="section__sub">A detailed overview you can trust.</p>
+                </div>
+              </div>
+              <div class="note" data-description></div>
+            </section>
+
+            <section class="section section--tight">
+              <div class="section__head">
+                <div>
+                  <h2 class="section__title">Itinerary</h2>
+                  <p class="section__sub">Your day, mapped clearly from start to finish.</p>
+                </div>
+              </div>
+              <ol class="timeline" data-itinerary></ol>
+            </section>
+
+            <section class="section section--tight">
+              <div class="section__head">
+                <div>
+                  <h2 class="section__title">What’s included</h2>
+                  <p class="section__sub">Know exactly what you get before you book.</p>
+                </div>
+              </div>
+              <div class="split">
+                <div class="card">
+                  <div class="card__body">
+                    <strong>Included</strong>
+                    <ul class="list list--check" data-included></ul>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card__body">
+                    <strong>Excluded</strong>
+                    <ul class="list list--x" data-excluded></ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section section--tight">
+              <div class="section__head">
+                <div>
+                  <h2 class="section__title">Meeting point</h2>
+                  <p class="section__sub">Map placeholder — replace with a real map embed later.</p>
+                </div>
+              </div>
+              <div class="note map-placeholder">
+                Map placeholder (Google Maps embed can be added later)
+              </div>
+            </section>
+
+            <section class="section section--tight">
+              <div class="section__head">
+                <div>
+                  <h2 class="section__title">Cancellation policy</h2>
+                  <p class="section__sub">Simple and readable.</p>
+                </div>
+              </div>
+              <div class="note note--ok" data-cancellation></div>
+            </section>
+
+            <section class="section section--tight">
+              <div class="section__head">
+                <div>
+                  <h2 class="section__title">Customer reviews</h2>
+                  <p class="section__sub">Mock reviews for the UI — swap with real data later.</p>
+                </div>
+              </div>
+              <div class="reviews" data-reviews></div>
+            </section>
+
+            <section class="section section--tight">
+              <div class="section__head">
+                <div>
+                  <h2 class="section__title">Related tours</h2>
+                  <p class="section__sub">More ideas near this experience.</p>
+                </div>
+                <a class="btn btn--ghost" href="tours.html">Browse all</a>
+              </div>
+              <div class="grid grid--cards grid--scroll" data-related></div>
+            </section>
+          </section>
+
+          <aside class="card sticky" aria-label="Booking summary">
+            <div class="card__body">
+              <div class="kicker">From</div>
+              <div class="price-inline">
+                <strong data-price>$0</strong>
+                <span class="muted" data-old-price></span>
+              </div>
+              <div class="hero__fineprint">Per person • Taxes/fees may apply later</div>
+
+              <div class="stack stack--sm mt-16">
+                <div class="note note--ok">Instant confirmation</div>
+                <div class="note">Trusted local experts</div>
+                <div class="note note--warn" data-urgency>Limited spots available on popular dates</div>
+              </div>
+
+              <form class="stack mt-16" data-booking-box>
+                <div class="field">
+                  <label for="date">Select date</label>
+                  <input id="date" type="date" name="date" required />
+                </div>
+                <div class="field">
+                  <label for="travelers">Travelers</label>
+                  <input id="travelers" type="number" name="travelers" min="1" value="2" required />
+                </div>
+                <button class="btn btn--primary btn--block" type="submit">Continue to booking</button>
+                <a class="btn btn--ghost btn--block whatsapp" data-whatsapp target="_blank" rel="noopener noreferrer">Ask on WhatsApp</a>
+                <a class="btn btn--ghost btn--block" href="tours.html">Back to results</a>
+              </form>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__bottom">
+          <span>© <span data-year></span> FTS Travels.</span>
+          <span class="muted">Details page built with plain HTML/CSS/JS.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="js/details.js"></script>
+  </body>
+</html>
+

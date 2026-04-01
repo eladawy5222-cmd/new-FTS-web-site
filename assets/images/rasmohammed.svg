@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="875" viewBox="0 0 1400 875">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#56e0c4"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="875" fill="#0b1220"/>
+  <rect x="70" y="70" width="1260" height="735" rx="44" fill="url(#g)" opacity=".14"/>
+  <path d="M0 610 C220 540, 420 700, 620 610 C840 520, 1040 720, 1400 600 L1400 875 L0 875 Z" fill="rgba(255,255,255,.12)"/>
+  <path d="M320 600 C360 560, 420 560, 460 600" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M540 650 C580 610, 640 610, 680 650" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="1080" cy="300" r="92" fill="rgba(255,255,255,.14)"/>
+  <text x="100" y="168" fill="rgba(233,238,249,.92)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="66" font-weight="800">Ras Mohammed</text>
+  <text x="100" y="228" fill="rgba(233,238,249,.72)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="28" font-weight="600">Marine reserve • Reefs • Easy day</text>
+</svg>
+

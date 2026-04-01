@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="875" viewBox="0 0 1400 875">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4ea7ff"/>
+      <stop offset="1" stop-color="#56e0c4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="875" fill="#0b1220"/>
+  <rect x="70" y="70" width="1260" height="735" rx="44" fill="url(#g)" opacity=".14"/>
+  <path d="M0 640 C260 520, 460 780, 700 640 C940 510, 1130 760, 1400 610 L1400 875 L0 875 Z" fill="rgba(255,255,255,.12)"/>
+  <path d="M0 700 C280 590, 470 820, 740 700 C1000 590, 1180 820, 1400 700" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="10" stroke-linecap="round"/>
+  <text x="100" y="168" fill="rgba(233,238,249,.92)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="66" font-weight="800">Nile</text>
+  <text x="100" y="228" fill="rgba(233,238,249,.72)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="28" font-weight="600">Scenic routes • Temple stops • Smooth logistics</text>
+</svg>
+
