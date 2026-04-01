@@ -87,22 +87,32 @@ async function init() {
   ratingHost.innerHTML = "";
   const ratingWrap = document.createElement("div");
   ratingWrap.className = "rating-inline";
-  ratingWrap.appendChild(renderStars(tour.rating));
-  const score = document.createElement("span");
-  score.className = "rating-inline__score";
-  score.textContent = (Number(tour.rating) || 0).toFixed(1);
-  const count = document.createElement("span");
-  count.className = "rating-inline__count";
-  count.textContent = `${Number(tour.reviewsCount) || 0} reviews`;
-  ratingWrap.appendChild(score);
-  ratingWrap.appendChild(count);
+  const ratingNum = Number(tour.rating);
+  const reviewsNum = Number(tour.reviewsCount);
+  const hasReviews = Number.isFinite(ratingNum) && ratingNum > 0 && Number.isFinite(reviewsNum) && reviewsNum > 0;
+  if (hasReviews) {
+    ratingWrap.appendChild(renderStars(ratingNum));
+    const score = document.createElement("span");
+    score.className = "rating-inline__score";
+    score.textContent = ratingNum.toFixed(1);
+    const count = document.createElement("span");
+    count.className = "rating-inline__count";
+    count.textContent = `${reviewsNum.toLocaleString()} reviews`;
+    ratingWrap.appendChild(score);
+    ratingWrap.appendChild(count);
+  } else {
+    const count = document.createElement("span");
+    count.className = "rating-inline__count";
+    count.textContent = "No reviews yet";
+    ratingWrap.appendChild(count);
+  }
   ratingHost.appendChild(ratingWrap);
 
   const reviewSummary = qs("[data-review-summary]");
   if (reviewSummary) {
-    reviewSummary.textContent = `Rated ${(Number(tour.rating) || 0).toFixed(1)}/5 from ${
-      Number(tour.reviewsCount) || 0
-    } traveler reviews. Expect clear timing, knowledgeable guides, and well-planned stops.`;
+    reviewSummary.textContent = hasReviews
+      ? `Rated ${ratingNum.toFixed(1)}/5 from ${reviewsNum.toLocaleString()} traveler reviews. Expect clear timing, knowledgeable guides, and well-planned stops.`
+      : "Be among the first to review this experience. Our team focuses on clear timing, safe pickups, and well-planned stops.";
   }
 
   const badges = qs("[data-badges]");

@@ -126,28 +126,35 @@ export function createTourCard(tour, { compact = false } = {}) {
   const facts = document.createElement("div");
   facts.className = "tour-card__facts";
 
-  const ratingPill = document.createElement("div");
-  ratingPill.className = "rating-pill";
-  const ratingStar = document.createElement("span");
-  ratingStar.className = "rating-pill__star";
-  ratingStar.textContent = "★";
-  const ratingValue = document.createElement("span");
-  ratingValue.className = "rating-pill__value";
-  ratingValue.textContent = (Number(tour.rating) || 0).toFixed(1);
-  const ratingCount = document.createElement("span");
-  ratingCount.className = "rating-pill__count";
-  ratingCount.textContent = `${Number(tour.reviewsCount) || 0} reviews`;
-  ratingPill.appendChild(ratingStar);
-  ratingPill.appendChild(ratingValue);
-  ratingPill.appendChild(ratingCount);
-  facts.appendChild(ratingPill);
-
   const addFact = (text) => {
     const p = document.createElement("span");
     p.className = "info-pill";
     p.textContent = text;
     facts.appendChild(p);
   };
+
+  const ratingNum = Number(tour.rating);
+  const reviewsNum = Number(tour.reviewsCount);
+  const hasReviews = Number.isFinite(ratingNum) && ratingNum > 0 && Number.isFinite(reviewsNum) && reviewsNum > 0;
+  if (hasReviews) {
+    const ratingPill = document.createElement("div");
+    ratingPill.className = "rating-pill";
+    const ratingStar = document.createElement("span");
+    ratingStar.className = "rating-pill__star";
+    ratingStar.textContent = "★";
+    const ratingValue = document.createElement("span");
+    ratingValue.className = "rating-pill__value";
+    ratingValue.textContent = ratingNum.toFixed(1);
+    const ratingCount = document.createElement("span");
+    ratingCount.className = "rating-pill__count";
+    ratingCount.textContent = `${reviewsNum.toLocaleString()} reviews`;
+    ratingPill.appendChild(ratingStar);
+    ratingPill.appendChild(ratingValue);
+    ratingPill.appendChild(ratingCount);
+    facts.appendChild(ratingPill);
+  } else {
+    addFact("New");
+  }
   if (tour.duration?.label) addFact(tour.duration.label);
   if (tour.type) addFact(tour.type);
 
@@ -180,7 +187,7 @@ export function createTourCard(tour, { compact = false } = {}) {
   body.appendChild(top);
   body.appendChild(meta);
   body.appendChild(facts);
-  if (compact) body.appendChild(ratingRow);
+  if (compact && hasReviews) body.appendChild(ratingRow);
   body.appendChild(proof);
   if (!compact) body.appendChild(desc);
 
@@ -297,4 +304,3 @@ export function updateParamsFromForm(params, form, { allowEmpty = false } = {}) 
     else params.delete(name);
   });
 }
-

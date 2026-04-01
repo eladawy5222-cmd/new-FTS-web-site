@@ -27,13 +27,35 @@ function num(v) {
 
 function listFromUnknown(v) {
   if (!v) return [];
-  if (Array.isArray(v)) return v.map((x) => String(x || "").trim()).filter(Boolean);
+  if (Array.isArray(v)) {
+    return v
+      .map((x) => {
+        if (x && typeof x === "object") {
+          const t = x.highlight_text ?? x.text ?? x.label ?? x.title ?? x.name ?? x.value ?? "";
+          return String(t || "").trim();
+        }
+        return String(x || "").trim();
+      })
+      .filter(Boolean);
+  }
   const text = htmlToText(v);
   if (!text) return [];
   return text
     .split(/\r?\n|•|\u2022|;|\s{2,}/g)
     .map((x) => String(x || "").trim())
     .filter(Boolean);
+}
+
+function listFromNewlines(v) {
+  if (!v) return [];
+  if (Array.isArray(v)) return listFromUnknown(v);
+  const text = htmlToText(v);
+  if (!text) return [];
+  const lines = text
+    .split(/\r?\n/g)
+    .map((x) => x.trim())
+    .filter(Boolean);
+  return lines.length ? lines : listFromUnknown(text);
 }
 
 function firstTermName(tax, keys) {
@@ -87,17 +109,30 @@ function derivePricing(pricing) {
 
   const packages = Array.isArray(p.packages) ? p.packages : Array.isArray(p.package_pricing) ? p.package_pricing : [];
   if (packages.length) {
-    const values = packages
-      .map((pkg) => ({
-        actual: num(pkg.actual_price ?? pkg.sale_price ?? pkg.price ?? pkg.cost ?? null),
-        base: num(pkg.base_price ?? pkg.regular_price ?? null),
-      }))
-      .filter((x) => x.actual != null || x.base != null);
+    const entries = [];
 
-    const bestActual = values.map((x) => x.actual).filter((n) => n != null).sort((a, b) => a - b)[0];
-    const bestBase = values.map((x) => x.base).filter((n) => n != null).sort((a, b) => a - b)[0];
-    const price = bestActual != null ? bestActual : bestBase != null ? bestBase : 0;
-    const oldPrice = bestBase != null && bestBase > price ? bestBase : null;
+    packages.forEach((pkg) => {
+      const cats = pkg?.pricing?.categories;
+      if (Array.isArray(cats) && cats.length) {
+        cats.forEach((cat) => {
+          const price = num(cat?.sale_price ?? cat?.actual_price ?? cat?.price ?? cat?.cost ?? null);
+          const regular = num(cat?.regular_price ?? cat?.base_price ?? cat?.original_price ?? null);
+          if (price != null || regular != null) entries.push({ price: price != null ? price : regular, regular });
+        });
+        return;
+      }
+
+      const price = num(pkg?.actual_price ?? pkg?.sale_price ?? pkg?.price ?? pkg?.cost ?? null);
+      const regular = num(pkg?.base_price ?? pkg?.regular_price ?? null);
+      if (price != null || regular != null) entries.push({ price: price != null ? price : regular, regular });
+    });
+
+    const best = entries
+      .filter((x) => x.price != null)
+      .sort((a, b) => (a.price || 0) - (b.price || 0))[0];
+
+    const price = best?.price != null ? best.price : 0;
+    const oldPrice = best?.regular != null && best.regular > price ? best.regular : null;
     return { price, oldPrice };
   }
 
@@ -111,7 +146,7 @@ function derivePricing(pricing) {
 function buildBadges({ featured, rating, reviewsCount, cancellation, instant }) {
   const badges = [];
   if (featured) badges.push("Best Seller");
-  if ((rating || 0) >= 4.8 && (reviewsCount || 0) >= 40) badges.push("Top Rated");
+  if (rating != null && reviewsCount != null && rating >= 4.8 && reviewsCount >= 40) badges.push("Top Rated");
   const c = String(cancellation || "").toLowerCase();
   if (c.includes("free") && c.includes("cancel")) badges.push("Free Cancellation");
   if (instant) badges.push("Instant Confirmation");
@@ -136,7 +171,7 @@ function fallbackImageByLocation(location) {
 }
 
 function pickContent(trip) {
-  const html = pick(trip, ["core.content.rendered", "core.content", "general.content", "content.rendered", "content"], "");
+  const html = pick(trip, ["core.content_html", "core.content.rendered", "core.content", "general.content", "content.rendered", "content"], "");
   return sanitizeHtml(html);
 }
 
@@ -156,8 +191,8 @@ function normalizeItinerary(v) {
   if (Array.isArray(v)) {
     return v
       .map((s) => ({
-        title: String(s?.title || s?.label || s?.heading || "").trim(),
-        description: htmlToText(s?.description || s?.desc || s?.content || ""),
+        title: String(s?.title || s?.itinerary_title || s?.label || s?.heading || "").trim(),
+        description: htmlToText(s?.content || s?.itinerary_content || s?.description || s?.desc || ""),
       }))
       .filter((x) => x.title || x.description);
   }
@@ -187,8 +222,8 @@ export function mapWpTripToTour(trip) {
 
   const duration = parseDuration(pick(trip, ["general.duration", "duration"], ""), meta);
 
-  const rating = num(pick(trip, ["general.rating", "rating", "meta.rating", "core.rating"], null)) || 0;
-  const reviewsCount = num(pick(trip, ["general.reviewsCount", "general.reviews", "reviewsCount", "reviews", "meta.reviewsCount"], null)) || 0;
+  const rating = num(pick(trip, ["general.rating", "rating", "meta.rating", "core.rating"], null));
+  const reviewsCount = num(pick(trip, ["general.reviewsCount", "general.reviews", "reviewsCount", "reviews", "meta.reviewsCount"], null));
 
   const pricing = derivePricing(pick(trip, ["pricing", "general.pricing", "meta.pricing"], {}));
 
@@ -212,9 +247,9 @@ export function mapWpTripToTour(trip) {
   const shortDescription = truncate(excerpt || htmlToText(fullDescription) || "", 160);
 
   const highlights = listFromUnknown(pick(meta, ["trip_highlights", "highlights", "general.highlights"], null)).slice(0, 10);
-  const included = listFromUnknown(pick(meta, ["trip_includes", "includes", "included"], null)).slice(0, 12);
-  const excluded = listFromUnknown(pick(meta, ["trip_excludes", "excludes", "excluded"], null)).slice(0, 12);
-  const itinerary = normalizeItinerary(pick(meta, ["itinerary", "trip_itinerary", "general.itinerary"], null)).slice(0, 10);
+  const included = listFromNewlines(pick(meta, ["cost.cost_includes"], null)).slice(0, 16);
+  const excluded = listFromNewlines(pick(meta, ["cost.cost_excludes"], null)).slice(0, 16);
+  const itinerary = normalizeItinerary(pick(meta, ["trip_itinerary", "itinerary", "general.itinerary"], null)).slice(0, 10);
 
   const primaryImage = image || gallery[0] || fallbackImageByLocation(location);
   const safeGallery = gallery.length ? gallery : primaryImage ? [primaryImage] : [];

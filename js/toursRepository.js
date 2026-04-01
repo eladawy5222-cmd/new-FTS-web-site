@@ -12,9 +12,12 @@ function normalizeTour(t) {
   tour.category = String(tour.category || "");
   tour.type = String(tour.type || "");
   tour.price = Number(tour.price) || 0;
-  tour.oldPrice = tour.oldPrice != null ? Number(tour.oldPrice) || 0 : null;
-  tour.rating = Number(tour.rating) || 0;
-  tour.reviewsCount = Number(tour.reviewsCount) || 0;
+  const oldPriceNum = tour.oldPrice != null ? Number(tour.oldPrice) : null;
+  tour.oldPrice = Number.isFinite(oldPriceNum) && oldPriceNum > 0 ? oldPriceNum : null;
+  const ratingNum = tour.rating != null ? Number(tour.rating) : null;
+  tour.rating = Number.isFinite(ratingNum) && ratingNum > 0 ? ratingNum : null;
+  const reviewsNum = tour.reviewsCount != null ? Number(tour.reviewsCount) : null;
+  tour.reviewsCount = Number.isFinite(reviewsNum) && reviewsNum > 0 ? reviewsNum : null;
   tour.badges = Array.isArray(tour.badges) ? tour.badges.map((x) => String(x)) : [];
   tour.image = String(tour.image || "");
   tour.gallery = Array.isArray(tour.gallery) ? tour.gallery.map((x) => String(x)) : tour.image ? [tour.image] : [];

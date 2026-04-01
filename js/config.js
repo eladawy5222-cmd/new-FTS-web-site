@@ -1,6 +1,6 @@
 const DEFAULT_WHATSAPP_E164 = "201000000000";
-const DEFAULT_TRIP_API_BASE = "";
-const DEFAULT_TRIPS_ENDPOINT = "/trips";
+const DEFAULT_TRIP_API_BASE = "https://ftstravels.com/wp-json";
+const DEFAULT_TRIPS_ENDPOINT = "/fts/v1/trips";
 
 if (typeof window !== "undefined") {
   const existing = String(window.FTS_WHATSAPP_E164 || "").trim();

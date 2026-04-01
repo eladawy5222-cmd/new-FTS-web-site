@@ -9,7 +9,7 @@ You can configure the API without changing the code in either of these ways:
 1) **Preferred (hosting/runtime config):** define a global before loading the pages’ module scripts:
 
 - `window.FTS_TRIP_API_BASE` = the API base URL (no trailing slash)
-- `window.FTS_TRIPS_ENDPOINT` = the trips endpoint path (default: `/trips`)
+- `window.FTS_TRIPS_ENDPOINT` = the trips endpoint path (default: `/fts/v1/trips`)
 
 2) **Fallback (code config):** edit defaults in [config.js](file:///D:/FTS%20Projects/new%20FTS%20web%20site/js/config.js):
 
@@ -18,7 +18,9 @@ You can configure the API without changing the code in either of these ways:
 
 Notes:
 - `window.FTS_API_BASE` is still supported for backward compatibility if `window.FTS_TRIP_API_BASE` is not set.
-- If no API base is configured (empty string), the site automatically falls back to mock tours from `js/data.js`.
+- Default production base: `https://ftstravels.com/wp-json`
+- Default production endpoint: `/fts/v1/trips`
+- If the API request fails, or returns an empty list, the site automatically falls back to mock tours from `js/data.js`.
 
 ## Mapper / adapter layer
 
@@ -46,7 +48,7 @@ The UI expects a normalized tour object with:
 
 ### API fields used (mapping strategy)
 
-The mapper is defensive and supports multiple possible WordPress shapes:
+The mapper aligns to the production payload and is defensive across small variations:
 
 **Identity**
 - `id`: `core.id` → `id` → `core.ID` → `ID`
@@ -64,21 +66,21 @@ The mapper is defensive and supports multiple possible WordPress shapes:
 
 **Pricing**
 - If package pricing exists:
-  - `price`: lowest of `packages[].actual_price` / `packages[].sale_price` / `packages[].price`
-  - `oldPrice`: `packages[].base_price` when greater than `price`
+  - `price`: lowest of `pricing.packages[].pricing.categories[].sale_price` / `actual_price` / `price`
+  - `oldPrice`: `pricing.packages[].pricing.categories[].regular_price` when greater than `price`
 - Otherwise:
   - `price`: `pricing.actual_price` / `pricing.sale_price` / `pricing.from_price` / `pricing.price`
   - `oldPrice`: `pricing.base_price` / `pricing.regular_price` when greater than `price`
 
 **Content**
-- `fullDescription`: `core.content.rendered` (sanitized) → `general.content` → `content.rendered`
+- `fullDescription`: `core.content_html` (sanitized) → `core.content.rendered` → `general.content` → `content.rendered`
 - `shortDescription`: `core.excerpt.rendered` (text) → `seo.description` → truncated text from `fullDescription`
 
 **Structured trip details**
 - `highlights`: `meta.wp_travel_engine_setting.trip_highlights`
-- `included`: `meta.wp_travel_engine_setting.trip_includes`
-- `excluded`: `meta.wp_travel_engine_setting.trip_excludes`
-- `itinerary`: `meta.wp_travel_engine_setting.itinerary` (array) or a text fallback
+- `included`: `meta.wp_travel_engine_setting.cost.cost_includes` (newline-split)
+- `excluded`: `meta.wp_travel_engine_setting.cost.cost_excludes` (newline-split)
+- `itinerary`: `meta.wp_travel_engine_setting.trip_itinerary` (array of objects) with fallback support
 - `duration`: `meta.wp_travel_engine_setting.trip_duration` plus optional `duration_days/duration_hours`
 - `cancellation`: `general.cancellation` → `meta.cancellation_policy`
 
@@ -86,7 +88,7 @@ The mapper is defensive and supports multiple possible WordPress shapes:
 - `featured`: `general.featured` → `featured` → `meta.featured` → `core.sticky`
 - `badges`:
   - “Best Seller” if `featured`
-  - “Top Rated” if `rating >= 4.8` and `reviewsCount >= 40`
+  - “Top Rated” only when `rating` and `reviewsCount` are explicitly present and meet the threshold
   - “Free Cancellation” if cancellation text contains “free” and “cancel”
   - “Instant Confirmation” if `general.instant_confirmation` / `meta.booking.instant_confirmation`
 
