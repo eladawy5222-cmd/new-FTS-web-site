@@ -76,6 +76,12 @@ function isPlaceholderImageUrl(url) {
   return false;
 }
 
+function normalizeMediaUrlKey(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  return raw.split("#")[0];
+}
+
 function coercePositiveInt(v) {
   const n = Number(v);
   if (!Number.isFinite(n) || n <= 0) return null;
@@ -182,10 +188,13 @@ async function hydrateToursMedia(tours, { base, debug }) {
     const realExistingGallery = existingGallery.filter((u) => !isPlaceholderImageUrl(u));
 
     const combined = [];
+    const seen = new Set();
     const add = (u) => {
       const url = String(u || "").trim();
-      if (!url) return;
-      if (combined.includes(url)) return;
+      const key = normalizeMediaUrlKey(url);
+      if (!key) return;
+      if (seen.has(key)) return;
+      seen.add(key);
       combined.push(url);
     };
 
@@ -313,7 +322,8 @@ export async function getRelatedTours(slug, limit = 4) {
 export async function getPopularDestinations() {
   const list = await getTours();
   const all = list.flatMap((t) => (Array.isArray(t.destinations) && t.destinations.length ? t.destinations : [t.location]).filter(Boolean));
-  const fromData = Array.from(new Set(all)).sort((a, b) => a.localeCompare(b));
+  let fromData = Array.from(new Set(all)).sort((a, b) => a.localeCompare(b));
+  if (fromData.length > 1) fromData = fromData.filter((x) => String(x).toLowerCase() !== "egypt");
   return fromData.length ? fromData : mockPopularDestinations;
 }
 

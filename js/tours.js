@@ -1,4 +1,4 @@
-import { buildBookingUrl, buildTourUrl, escapeHtml, initHeader, mountTourGrid, qs, qsa, setFormFromParams, updateParamsFromForm } from "./ui.js";
+import { buildBookingUrl, buildTourUrl, createTourCard, escapeHtml, initHeader, mountTourGrid, qs, qsa, setFormFromParams, updateParamsFromForm } from "./ui.js";
 import { buildFacetOptions, filterTours, parseStateFromParams, sortTours } from "./filters.js";
 import { getDisplayCurrency } from "./config.js";
 import { getTours } from "./toursRepository.js";
@@ -104,10 +104,63 @@ async function init() {
 
   const form = qs("[data-filters-form]");
   const grid = qs("[data-tours-grid]");
+  const gridHost = grid?.parentElement;
   const count = qs("[data-results-count]");
   const active = qs("[data-active-filters]");
   const topPick = qs("[data-top-pick]");
   const sortSelects = qsa("[data-sort]");
+
+  const PAGE_SIZE = 12;
+  let visibleCount = PAGE_SIZE;
+  let renderedCount = 0;
+  let currentKey = "";
+  let currentSorted = [];
+
+  const loadMoreWrap = document.createElement("div");
+  loadMoreWrap.className = "load-more";
+  const loadMoreBtn = document.createElement("button");
+  loadMoreBtn.type = "button";
+  loadMoreBtn.className = "btn btn--ghost";
+  loadMoreBtn.textContent = "Load more";
+  loadMoreWrap.appendChild(loadMoreBtn);
+  if (gridHost) gridHost.appendChild(loadMoreWrap);
+
+  const updateLoadMore = () => {
+    const remaining = Math.max(0, currentSorted.length - visibleCount);
+    if (remaining <= 0) {
+      loadMoreWrap.style.display = "none";
+      return;
+    }
+    loadMoreWrap.style.display = "flex";
+    loadMoreBtn.textContent = `Load more (${Math.min(PAGE_SIZE, remaining)} of ${remaining} remaining)`;
+  };
+
+  const renderIncremental = ({ reset = false, onReset } = {}) => {
+    if (!grid) return;
+    if (!currentSorted.length) {
+      mountTourGrid(grid, [], { onReset });
+      renderedCount = 0;
+      loadMoreWrap.style.display = "none";
+      return;
+    }
+
+    const target = Math.min(visibleCount, currentSorted.length);
+    if (reset) {
+      grid.innerHTML = "";
+      renderedCount = 0;
+    }
+
+    const frag = document.createDocumentFragment();
+    for (let i = renderedCount; i < target; i++) frag.appendChild(createTourCard(currentSorted[i]));
+    grid.appendChild(frag);
+    renderedCount = target;
+    updateLoadMore();
+  };
+
+  loadMoreBtn.addEventListener("click", () => {
+    visibleCount += PAGE_SIZE;
+    renderIncremental({ reset: false });
+  });
 
   fillSelect(qs("select[name='location']", form), facets.locations, { placeholder: "All locations" });
   fillSelect(qs("select[name='category']", form), facets.categories, { placeholder: "All categories" });
@@ -181,13 +234,24 @@ async function init() {
     const sorted = sortTours(filtered, state.sort);
 
     count.textContent = `${sorted.length} tour${sorted.length === 1 ? "" : "s"}`;
-    mountTourGrid(grid, sorted, {
-      onReset: () => {
-        form.reset();
-        setAllSorts("recommended");
-        apply();
-      },
-    });
+    const newKey = p2.toString();
+    const changed = newKey !== currentKey;
+    if (changed) {
+      currentKey = newKey;
+      visibleCount = PAGE_SIZE;
+      currentSorted = sorted;
+      renderIncremental({
+        reset: true,
+        onReset: () => {
+          form.reset();
+          setAllSorts("recommended");
+          apply();
+        },
+      });
+    } else {
+      currentSorted = sorted;
+      updateLoadMore();
+    }
     renderTopPick(topPick, sorted[0] || null);
 
     renderActiveChips(state, active, {

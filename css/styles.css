@@ -1004,6 +1004,12 @@ button,input,select,textarea{ font: inherit; }
 }
 .filters-bar__left{ display:flex; gap: 10px; flex-wrap: wrap; align-items:center; }
 
+.load-more{
+  display:flex;
+  justify-content:center;
+  margin-top: 16px;
+}
+
 .drawer{
   position: fixed;
   inset: 0;
@@ -1103,6 +1109,10 @@ button,input,select,textarea{ font: inherit; }
     top: calc(100% + 12px);
     right: 0;
     min-width: 220px;
+    max-width: calc(100vw - 2*var(--pad));
+    max-height: 70vh;
+    overflow: auto;
+    overscroll-behavior: contain;
     flex-direction: column;
     align-items: stretch;
     background: rgba(11,18,32,.92);
@@ -1111,9 +1121,15 @@ button,input,select,textarea{ font: inherit; }
     padding: 10px;
     box-shadow: var(--shadow);
     display:none;
+    z-index: 70;
   }
   [data-nav][data-open="true"] .nav__links{ display:flex; }
   .header-search{ display:none; }
+  .toolbar{ align-items: stretch; }
+  .toolbar__right{ width: 100%; }
+  .sort{ width: 100%; }
+  .sort select{ width: 100%; min-width: 0; }
+  .results-count{ width: 100%; justify-content: space-between; }
   .grid--cards > *{ grid-column: span 12; }
   .trust > *{ grid-column: span 12; }
   .destination{ grid-column: span 12; }

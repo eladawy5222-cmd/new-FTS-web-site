@@ -267,10 +267,41 @@ export function initHeader() {
   const toggle = qs("[data-nav-toggle]");
   const nav = qs("[data-nav]");
   if (toggle && nav) {
+    const close = () => {
+      nav.setAttribute("data-open", "false");
+      toggle.setAttribute("aria-expanded", "false");
+    };
+
+    const openMenu = () => {
+      nav.setAttribute("data-open", "true");
+      toggle.setAttribute("aria-expanded", "true");
+    };
+
     toggle.addEventListener("click", () => {
-      const open = nav.getAttribute("data-open") === "true";
-      nav.setAttribute("data-open", String(!open));
-      toggle.setAttribute("aria-expanded", String(!open));
+      const isOpen = nav.getAttribute("data-open") === "true";
+      if (isOpen) close();
+      else openMenu();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (nav.getAttribute("data-open") !== "true") return;
+      const t = e.target;
+      if (t && nav.contains(t)) return;
+      close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if (nav.getAttribute("data-open") !== "true") return;
+      close();
+    });
+
+    nav.addEventListener("click", (e) => {
+      const t = e.target;
+      const link = t && t.closest ? t.closest("a") : null;
+      if (!link) return;
+      if (nav.getAttribute("data-open") !== "true") return;
+      close();
     });
   }
 

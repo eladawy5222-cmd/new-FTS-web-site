@@ -5,9 +5,11 @@ export function buildFacetOptions(tours) {
   const allDestinations = tours.flatMap((t) =>
     (Array.isArray(t.destinations) && t.destinations.length ? t.destinations : [t.location]).filter(Boolean)
   );
+  let locations = uniq(allDestinations);
+  if (locations.length > 1) locations = locations.filter((x) => String(x).toLowerCase() !== "egypt");
 
   return {
-    locations: uniq(allDestinations),
+    locations,
     categories: uniq(tours.map((t) => t.category)),
     types: uniq(tours.map((t) => t.type)),
     price: {

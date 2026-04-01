@@ -145,6 +145,26 @@ function extractMediaUrls(v) {
   return [];
 }
 
+function normalizeMediaUrlKey(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  const noHash = raw.split("#")[0];
+  return noHash;
+}
+
+function dedupeMediaUrls(urls) {
+  const out = [];
+  const seen = new Set();
+  (urls || []).forEach((u) => {
+    const url = String(u || "").trim();
+    const key = normalizeMediaUrlKey(url);
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    out.push(url);
+  });
+  return out;
+}
+
 function derivePricing(pricing, { pax = 1 } = {}) {
   const p = pricing && typeof pricing === "object" ? pricing : {};
   const rootCurrency = normalizeCurrencyCode(p.currency);
@@ -277,6 +297,37 @@ function extractDestinationTerms(tax) {
   return [];
 }
 
+function normalizeDestinationName(v) {
+  const s = String(v || "").trim();
+  if (!s) return "";
+  const cleaned = decodeHtmlEntities(htmlToText(s)).trim();
+  const key = cleaned.toLowerCase().replace(/\s+/g, " ").trim();
+  const aliases = {
+    "sharm el sheikh": "Sharm El Sheikh",
+    "sharm el-sheikh": "Sharm El Sheikh",
+    "sharm elsheikh": "Sharm El Sheikh",
+    "sharm": "Sharm El Sheikh",
+    "hurghada": "Hurghada",
+    "cairo": "Cairo",
+    "luxor": "Luxor",
+    "aswan": "Aswan",
+    "marsa alam": "Marsa Alam",
+    "marsa alam ": "Marsa Alam",
+    "dahab": "Dahab",
+  };
+  return aliases[key] || cleaned;
+}
+
+function buildDestinations({ taxDestinations, city }) {
+  const cityNorm = normalizeDestinationName(city);
+  const terms = Array.isArray(taxDestinations) ? taxDestinations.map(normalizeDestinationName).filter(Boolean) : [];
+  const hasEgypt = terms.some((x) => x.toLowerCase() === "egypt");
+  const filtered = terms.filter((x) => x.toLowerCase() !== "egypt");
+  const all = [cityNorm, ...filtered].filter(Boolean);
+  if (!all.length && hasEgypt) return ["Egypt"];
+  return dedupeMediaUrls(all);
+}
+
 function pickPrimaryDestination(destinations) {
   const list = Array.isArray(destinations) ? destinations.map((x) => String(x || "").trim()).filter(Boolean) : [];
   if (!list.length) return "";
@@ -361,8 +412,9 @@ export function mapWpTripToTour(trip) {
   const slugPicked = String(pick(trip, ["core.slug", "core.permalink_slug", "slug", "post_name"], "") || "");
   const slug = slugPicked || id;
 
-  const destinations = extractDestinationTerms(tax);
-  const location = pickPrimaryDestination(destinations) || String(pick(trip, ["general.location", "location"], "") || "");
+  const city = String(pick(trip, ["general.location", "location"], "") || "");
+  const destinations = buildDestinations({ taxDestinations: extractDestinationTerms(tax), city });
+  const location = pickPrimaryDestination(destinations) || normalizeDestinationName(city);
   const category =
     firstTermName(tax, ["categories", "category", "activities", "activity", "trip_categories", "trip_category"]) ||
     String(pick(trip, ["general.category", "category"], "") || "");
@@ -397,10 +449,11 @@ export function mapWpTripToTour(trip) {
   const galleryIds = Array.from(new Set([...extractWpGalleryIds(settings, metaRoot), ...referencedMediaIds])).filter(
     (x) => x !== featuredImageId
   );
-  const gallery = [
+  const galleryRaw = [
     ...extractMediaUrls(pick(trip, ["gallery", "general.gallery", "media.gallery"], null)),
     ...extractMediaUrls(pick(trip, ["core.gallery", "meta.gallery"], null)),
   ].filter(Boolean);
+  const gallery = dedupeMediaUrls(galleryRaw);
 
   const fullDescription = pickContent(trip);
   const excerpt = pickExcerpt(trip);
@@ -417,8 +470,9 @@ export function mapWpTripToTour(trip) {
   const excluded = listFromNewlines(excludedRaw).slice(0, 16);
   const itinerary = normalizeItinerary(pick(settings, ["trip_itinerary", "itinerary"], null)).slice(0, 10);
 
-  const primaryImage = image || gallery[0] || fallbackImageByLocation(location);
-  const safeGallery = gallery.length ? gallery : primaryImage ? [primaryImage] : [];
+  const ordered = dedupeMediaUrls([image, ...gallery]);
+  const primaryImage = ordered[0] || fallbackImageByLocation(location);
+  const safeGallery = ordered.length ? ordered : primaryImage ? [primaryImage] : [];
 
   return {
     id,
