@@ -305,6 +305,7 @@
     <script type="module">
       import { createTourCard, initHeader, qs } from "./js/ui.js";
       import { getCategories, getPopularDestinations, getTours } from "./js/toursRepository.js";
+      import { initCustomSelects } from "./js/select.js";
 
       async function mountStats() {
         const tours = await getTours();
@@ -391,6 +392,7 @@
           o.textContent = c;
           cat.appendChild(o);
         });
+        initCustomSelects(form);
 
         form.addEventListener("submit", (e) => {
           e.preventDefault();
@@ -416,4 +418,3 @@
     </script>
   </body>
 </html>
-

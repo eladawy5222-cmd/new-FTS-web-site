@@ -1,6 +1,7 @@
 import { buildBookingUrl, buildTourUrl, createTourCard, escapeHtml, initHeader, mountTourGrid, qs, qsa, setFormFromParams, updateParamsFromForm } from "./ui.js";
 import { buildFacetOptions, filterTours, parseStateFromParams, sortTours } from "./filters.js";
 import { getDisplayCurrency } from "./config.js";
+import { initCustomSelects } from "./select.js";
 import { getTours } from "./toursRepository.js";
 import { getDecisionCues } from "./decision.js";
 
@@ -165,6 +166,7 @@ async function init() {
   fillSelect(qs("select[name='location']", form), facets.locations, { placeholder: "All locations" });
   fillSelect(qs("select[name='category']", form), facets.categories, { placeholder: "All categories" });
   fillSelect(qs("select[name='type']", form), facets.types, { placeholder: "Any type" });
+  initCustomSelects();
 
   const url = new URL(window.location.href);
   const params = url.searchParams;
